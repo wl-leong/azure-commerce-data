@@ -1,5 +1,5 @@
 {
-	"name": "tr_warehousebalance_every_30min",
+	"name": "tr_sync_every_30min",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",
