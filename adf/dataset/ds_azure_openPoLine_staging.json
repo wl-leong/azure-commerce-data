@@ -9,7 +9,7 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "PKID",
+				"name": "openPurchaseOrderLineId",
 				"type": "bigint",
 				"precision": 19
 			},
@@ -19,7 +19,23 @@
 				"precision": 10
 			},
 			{
-				"name": "invID",
+				"name": "poName",
+				"type": "varchar"
+			},
+			{
+				"name": "poDate",
+				"type": "date"
+			},
+			{
+				"name": "poEstArvDate",
+				"type": "date"
+			},
+			{
+				"name": "containerNo",
+				"type": "varchar"
+			},
+			{
+				"name": "invId",
 				"type": "bigint",
 				"precision": 19
 			},
@@ -28,105 +44,39 @@
 				"type": "varchar"
 			},
 			{
-				"name": "parentUpc",
-				"type": "varchar"
-			},
-			{
 				"name": "modelNo",
 				"type": "varchar"
 			},
 			{
-				"name": "productCategory",
+				"name": "openPoQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "addrId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "warehouseName",
 				"type": "varchar"
 			},
 			{
-				"name": "productSubCategory",
-				"type": "varchar"
-			},
-			{
-				"name": "productType",
-				"type": "varchar"
-			},
-			{
-				"name": "marketFeedQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "balQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "lockQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "allocQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "TransferQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "soQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "wayfairQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "dsQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "dsAvailableQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "dsManualAllocQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "dsManualAllocEndDate",
-				"type": "date"
-			},
-			{
-				"name": "amzQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "dsAllocQty",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "virtualLock",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "insertedon",
+				"name": "insertedOn",
 				"type": "datetime",
 				"precision": 23,
 				"scale": 3
 			},
 			{
-				"name": "modifiedon",
-				"type": "smalldatetime",
-				"precision": 16,
-				"scale": 0
+				"name": "modifiedOn",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "publishedOnUtc",
+				"type": "datetime2",
+				"scale": 3
 			}
 		],
 		"typeProperties": {
