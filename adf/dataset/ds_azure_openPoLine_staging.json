@@ -1,0 +1,137 @@
+{
+	"name": "ds_azure_openPoLine_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PKID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "parentUpc",
+				"type": "varchar"
+			},
+			{
+				"name": "modelNo",
+				"type": "varchar"
+			},
+			{
+				"name": "productCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "productSubCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "productType",
+				"type": "varchar"
+			},
+			{
+				"name": "marketFeedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "balQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lockQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "allocQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TransferQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "soQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "wayfairQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dsQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dsAvailableQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dsManualAllocQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dsManualAllocEndDate",
+				"type": "date"
+			},
+			{
+				"name": "amzQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dsAllocQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "virtualLock",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "insertedon",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "modifiedon",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "openPurchaseOrderLine"
+		}
+	}
+}
