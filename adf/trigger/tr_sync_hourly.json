@@ -1,5 +1,5 @@
 {
-	"name": "tgr_sync_hourly",
+	"name": "tr_sync_hourly",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
