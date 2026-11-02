@@ -1,12 +1,12 @@
 {
-	"name": "tr_dailybalance_every_15min",
+	"name": "tr_sync_hourly",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pl_sync_dailybalance_full",
+					"referenceName": "pl_sync_openPoLineItem_full",
 					"type": "PipelineReference"
 				}
 			}
@@ -14,9 +14,9 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Minute",
-				"interval": 15,
-				"startTime": "2026-11-02T05:27:00",
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2026-11-02T15:30:00",
 				"timeZone": "Singapore Standard Time"
 			}
 		}

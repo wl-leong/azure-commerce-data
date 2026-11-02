@@ -1,0 +1,24 @@
+{
+	"name": "tr_sync_every_30min",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_warehousebalance_full",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 30,
+				"startTime": "2026-11-02T12:12:00",
+				"timeZone": "Singapore Standard Time"
+			}
+		}
+	}
+}

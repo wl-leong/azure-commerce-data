@@ -1,12 +1,12 @@
 {
-	"name": "tr_warehousebalance_every_30min",
+	"name": "tr_sync_every_15min",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pl_sync_warehousebalance_full",
+					"referenceName": "pl_sync_dailybalance_full",
 					"type": "PipelineReference"
 				}
 			}
@@ -15,8 +15,8 @@
 		"typeProperties": {
 			"recurrence": {
 				"frequency": "Minute",
-				"interval": 30,
-				"startTime": "2026-11-02T12:12:00",
+				"interval": 15,
+				"startTime": "2026-11-02T05:27:00",
 				"timeZone": "Singapore Standard Time"
 			}
 		}
