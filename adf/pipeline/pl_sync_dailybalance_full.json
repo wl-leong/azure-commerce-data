@@ -493,7 +493,7 @@
 						},
 						"rowsCopied": {
 							"value": {
-								"value": "@activity('copy_dailybalance_to_staging').output.rowCopied",
+								"value": "@activity('copy_dailybalance_to_staging').output.rowsCopied",
 								"type": "Expression"
 							},
 							"type": "Int64"
