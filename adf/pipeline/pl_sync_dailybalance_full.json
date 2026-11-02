@@ -1,0 +1,357 @@
+{
+	"name": "pl_sync_dailybalance_full",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_dailybalance_to_staging",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PKID",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "PKID",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "invID",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "invID",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "upc",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "upc",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "parentUpc",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "parentUpc",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "modelNo",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "modelNo",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "productCategory",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "productCategory",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "productSubCategory",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "productSubCategory",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "productType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "productType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "marketFeedQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "marketFeedQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "balQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "balQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "lockQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "lockQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "allocQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "allocQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TransferQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "TransferQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "soQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "soQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "wayfairQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "wayfairQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "dsQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "dsQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "dsAvailableQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "dsAvailableQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "dsManualAllocQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "dsManualAllocQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "dsManualAllocEndDate",
+									"type": "Date",
+									"physicalType": "date"
+								},
+								"sink": {
+									"name": "dsManualAllocEndDate",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "amzQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "amzQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "dsAllocQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "dsAllocQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "virtualLock",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "virtualLock",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "insertedon",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "insertedon",
+									"type": "DateTime",
+									"physicalType": "smalldatetime"
+								}
+							},
+							{
+								"source": {
+									"name": "modifiedon",
+									"type": "DateTime",
+									"physicalType": "smalldatetime"
+								},
+								"sink": {
+									"name": "modifiedon",
+									"type": "DateTime",
+									"physicalType": "smalldatetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_onprem_dailybalancerefresh",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_azure_dailybalance_staging",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"concurrency": 1,
+		"annotations": []
+	}
+}
