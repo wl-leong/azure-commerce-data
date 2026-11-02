@@ -665,19 +665,52 @@
 						"dependencyConditions": [
 							"Failed"
 						]
-					},
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Could not initialize the sync log.",
+					"errorCode": "START_LOG_FAILED"
+				}
+			},
+			{
+				"name": "fail_copy_pipeline",
+				"type": "Fail",
+				"dependsOn": [
 					{
 						"activity": "fail_copy_log",
 						"dependencyConditions": [
 							"Completed"
 						]
-					},
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Insert to staging ODS DailyBalanceRefresh failed.",
+					"errorCode": "COPY_FAILED"
+				}
+			},
+			{
+				"name": "fail_publish_pipeline",
+				"type": "Fail",
+				"dependsOn": [
 					{
 						"activity": "fail_publish_log",
 						"dependencyConditions": [
 							"Completed"
 						]
-					},
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Exec SSP_PublishInventoryBalanceSummary failed.",
+					"errorCode": "PUBLISH_FAILED"
+				}
+			},
+			{
+				"name": "fail_complete_pipeline",
+				"type": "Fail",
+				"dependsOn": [
 					{
 						"activity": "fail_complete_log",
 						"dependencyConditions": [
@@ -687,8 +720,8 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Could not initialize the sync log.",
-					"errorCode": "START_LOG_FAILED"
+					"message": "Update on complete run sync failed.",
+					"errorCode": "COMPLETE_SYNC_FAILED"
 				}
 			}
 		],
