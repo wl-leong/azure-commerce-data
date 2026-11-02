@@ -655,6 +655,23 @@
 					"referenceName": "ls_azure_sql",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "fail activity",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Could not initialize the sync log.",
+					"errorCode": "START_LOG_FAILED"
+				}
 			}
 		],
 		"concurrency": 1,
