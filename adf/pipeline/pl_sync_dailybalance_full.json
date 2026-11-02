@@ -323,7 +323,7 @@
 								"sink": {
 									"name": "insertedon",
 									"type": "DateTime",
-									"physicalType": "smalldatetime"
+									"physicalType": "datetime"
 								}
 							},
 							{

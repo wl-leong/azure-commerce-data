@@ -118,9 +118,9 @@
 			},
 			{
 				"name": "insertedon",
-				"type": "smalldatetime",
-				"precision": 16,
-				"scale": 0
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
 				"name": "modifiedon",
