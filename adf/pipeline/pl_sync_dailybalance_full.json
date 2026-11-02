@@ -519,7 +519,7 @@
 					{
 						"activity": "copy_dailybalance_to_staging",
 						"dependencyConditions": [
-							"Completed"
+							"Failed"
 						]
 					}
 				],
@@ -664,6 +664,24 @@
 						"activity": "start_sync_log",
 						"dependencyConditions": [
 							"Failed"
+						]
+					},
+					{
+						"activity": "fail_copy_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "fail_publish_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					},
+					{
+						"activity": "fail_complete_log",
+						"dependencyConditions": [
+							"Completed"
 						]
 					}
 				],
