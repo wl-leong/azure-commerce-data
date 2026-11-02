@@ -1,0 +1,53 @@
+{
+	"name": "ds_azure_inventorybalancewh_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "invBalanceWHid",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "addrId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "qty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "virtualInv",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "updateDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "inventory_balanceWh"
+		}
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"name": "ds_onprem_invbalancewh",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "inv_balanceWh"
+		}
+	}
+}
