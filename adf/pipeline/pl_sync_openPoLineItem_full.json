@@ -177,7 +177,19 @@
 									"physicalType": "datetime"
 								},
 								"sink": {
-									"name": "insertedon",
+									"name": "insertedOn",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "modifiedOn",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "modifiedOn",
 									"type": "DateTime",
 									"physicalType": "datetime"
 								}
