@@ -1,5 +1,5 @@
 {
-	"name": "tr_dailybalance_every_15min",
+	"name": "tr_sync_every_15min",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",
