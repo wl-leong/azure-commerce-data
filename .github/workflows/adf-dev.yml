@@ -1,0 +1,147 @@
+name: ADF validate and deploy dev
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ['adf/**', '.github/workflows/adf-dev.yml']
+  push:
+    branches: [main]
+    paths: ['adf/**', '.github/workflows/adf-dev.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate and export ADF
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SOURCE_FACTORY_ID: /subscriptions/524f210b-ca0e-464e-ae1c-6fd0678c36c9/resourceGroups/rg-dev-eastus-datafactory-02/providers/Microsoft.DataFactory/factories/adf-commerce-data-dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install pinned Microsoft ADF utility
+        run: npm install --prefix .ci-tools --no-audit --no-fund --ignore-scripts --save-exact @microsoft/azure-data-factory-utilities@1.0.3
+      - name: Validate and export deployment templates
+        run: node .ci-tools/node_modules/@microsoft/azure-data-factory-utilities/lib/index.js export "$GITHUB_WORKSPACE/adf" "$SOURCE_FACTORY_ID" "$GITHUB_WORKSPACE/ARMTemplate"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: adf-template
+          path: ARMTemplate/
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    name: Deploy development ADF
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: dev
+    concurrency:
+      group: adf-commerce-data-dev-deploy
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_DATA_FACTORY_NAME: ${{ vars.AZURE_DATA_FACTORY_NAME }}
+    steps:
+      - name: Verify deployment settings
+        shell: pwsh
+        run: |
+          foreach ($name in @('AZURE_CLIENT_ID','AZURE_TENANT_ID','AZURE_SUBSCRIPTION_ID','AZURE_RESOURCE_GROUP','AZURE_DATA_FACTORY_NAME')) {
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
+              throw "Missing dev environment variable: $name"
+            }
+          }
+          if ($env:AZURE_DATA_FACTORY_NAME -ne 'adf-commerce-data-dev') {
+            throw 'This workflow is approved only for the development factory.'
+          }
+      - uses: actions/download-artifact@v4
+        with:
+          name: adf-template
+          path: ARMTemplate
+      - name: Sign in to Azure without a password
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+      - name: Deploy factory resources safely
+        uses: azure/powershell@v2
+        with:
+          azPSVersion: latest
+          inlineScript: |
+            $ErrorActionPreference = 'Stop'
+            $group = $env:AZURE_RESOURCE_GROUP
+            $factory = $env:AZURE_DATA_FACTORY_NAME
+            $templatePath = Join-Path $env:GITHUB_WORKSPACE 'ARMTemplate/ARMTemplateForFactory.json'
+            $parametersPath = Join-Path $env:GITHUB_WORKSPACE 'ARMTemplate/ARMTemplateParametersForFactory.json'
+            $template = Get-Content -LiteralPath $templatePath -Raw | ConvertFrom-Json -AsHashtable
+            $parameters = Get-Content -LiteralPath $parametersPath -Raw | ConvertFrom-Json -AsHashtable
+
+            # Shared runtime lifecycle stays outside application deployment.
+            # Verify its linked definition matches, then omit runtime PUT operations.
+            $runtimePath = "/subscriptions/$env:AZURE_SUBSCRIPTION_ID/resourceGroups/$group/providers/Microsoft.DataFactory/factories/$factory/integrationRuntimes/ir-onprem-prod-shared?api-version=2018-06-01"
+            $runtime = (Invoke-AzRestMethod -Path $runtimePath -Method GET).Content | ConvertFrom-Json
+            if ($runtime.properties.type -ne 'SelfHosted') {
+              throw 'Expected an existing shared self-hosted runtime.'
+            }
+            $expectedRuntime = '/subscriptions/a39835b7-fa99-4c2d-b5bd-4c60768a4bc8/resourcegroups/rg-prod-eastus-datafactory-01/providers/Microsoft.DataFactory/factories/adf-cypressfulfillment/integrationruntimes/shlr-localtech'
+            if ($runtime.properties.typeProperties.linkedInfo.resourceId -ine $expectedRuntime) {
+              throw 'The linked runtime does not match the reviewed source runtime.'
+            }
+            $template.resources = @($template.resources | Where-Object { $_.type -notmatch '/integrationRuntimes$' })
+            foreach ($resource in $template.resources) {
+              if ($resource.ContainsKey('dependsOn')) {
+                $resource.dependsOn = @($resource.dependsOn | Where-Object { $_ -notmatch '/integrationRuntimes/' })
+              }
+            }
+
+            $deploymentParameters = @{}
+            foreach ($key in $parameters.parameters.Keys) {
+              if ($template.parameters.ContainsKey($key) -and $key -ne 'factoryName') {
+                $deploymentParameters[$key] = $parameters.parameters[$key].value
+              }
+            }
+            $deploymentParameters['factoryName'] = $factory
+
+            $triggers = @(Get-AzDataFactoryV2Trigger -ResourceGroupName $group -DataFactoryName $factory)
+            $started = @($triggers | Where-Object { $_.Properties.RuntimeState -eq 'Started' })
+            foreach ($trigger in $started) {
+              Stop-AzDataFactoryV2Trigger -ResourceGroupName $group -DataFactoryName $factory -Name $trigger.Name -Force | Out-Null
+            }
+
+            # Stop admitting new scheduled work before checking in-flight runs.
+            # Also avoid manual runs during deployment.
+            $runs = @(Get-AzDataFactoryV2PipelineRun -ResourceGroupName $group -DataFactoryName $factory -LastUpdatedAfter (Get-Date).ToUniversalTime().AddDays(-14) -LastUpdatedBefore (Get-Date).ToUniversalTime())
+            if (@($runs | Where-Object { $_.Status -in @('InProgress','Queued','Canceling') }).Count -gt 0) {
+              throw 'Deployment stopped: pipeline runs are active. Triggers remain stopped; wait for completion and rerun deployment.'
+            }
+
+            # Deploy trigger definitions stopped, including newly added triggers.
+            foreach ($resource in $template.resources) {
+              if ($resource.type -match '/triggers$') {
+                $resource.properties.runtimeState = 'Stopped'
+              }
+            }
+            $safeTemplate = Join-Path $env:RUNNER_TEMP 'adf-dev-template.json'
+            $template | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $safeTemplate -Encoding utf8
+
+            New-AzResourceGroupDeployment -Name "adf-dev-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT" -ResourceGroupName $group -TemplateFile $safeTemplate -TemplateParameterObject $deploymentParameters -Mode Incremental -ErrorAction Stop | Out-Null
+
+            # Restart only triggers that were already running; new schedules stay off.
+            foreach ($trigger in $started) {
+              Start-AzDataFactoryV2Trigger -ResourceGroupName $group -DataFactoryName $factory -Name $trigger.Name -Force | Out-Null
+            }
+            Write-Output 'Development deployment succeeded. New triggers remain stopped.'
