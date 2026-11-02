@@ -1,0 +1,27 @@
+{
+	"name": "ls_onprem_sql",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"server": "128.168.1.11",
+			"database": "tech",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "svc_adf_commerce_read",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ls_keyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "onprem-sql-reader-password"
+			}
+		},
+		"connectVia": {
+			"referenceName": "ir-onprem-prod-shared",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

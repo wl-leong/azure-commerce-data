@@ -1,0 +1,12 @@
+{
+	"name": "ir-onprem-prod-shared",
+	"properties": {
+		"type": "SelfHosted",
+		"typeProperties": {
+			"linkedInfo": {
+				"resourceId": "/subscriptions/a39835b7-fa99-4c2d-b5bd-4c60768a4bc8/resourcegroups/rg-prod-eastus-datafactory-01/providers/Microsoft.DataFactory/factories/adf-cypressfulfillment/integrationruntimes/shlr-localtech",
+				"authorizationType": "Rbac"
+			}
+		}
+	}
+}

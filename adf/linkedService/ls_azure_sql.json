@@ -1,0 +1,18 @@
+{
+	"name": "ls_azure_sql",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "furinnocloudtest.database.windows.net",
+			"database": "tech_mcp",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SystemAssignedManagedIdentity"
+		},
+		"connectVia": {
+			"referenceName": "ir-onprem-prod-shared",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
