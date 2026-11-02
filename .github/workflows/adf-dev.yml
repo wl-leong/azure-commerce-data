@@ -27,7 +27,7 @@ jobs:
       - name: Install pinned Microsoft ADF utility
         run: npm install --prefix .ci-tools --no-audit --no-fund --ignore-scripts --save-exact @microsoft/azure-data-factory-utilities@1.0.3
       - name: Validate and export deployment templates
-        run: node .ci-tools/node_modules/@microsoft/azure-data-factory-utilities/lib/index.js export "$GITHUB_WORKSPACE/adf" "$SOURCE_FACTORY_ID" "$GITHUB_WORKSPACE/ARMTemplate"
+        run: node .ci-tools/node_modules/@microsoft/azure-data-factory-utilities/lib/index.js export "$GITHUB_WORKSPACE/adf" "$SOURCE_FACTORY_ID" ARMTemplate
       - uses: actions/upload-artifact@v4
         with:
           name: adf-template
