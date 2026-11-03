@@ -72,6 +72,10 @@
 				"type": "bit"
 			},
 			{
+				"name": "isExcluded",
+				"type": "bit"
+			},
+			{
 				"name": "firstReceivedDate",
 				"type": "date"
 			}
