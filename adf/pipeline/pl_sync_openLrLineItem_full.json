@@ -106,8 +106,8 @@
 								},
 								"sink": {
 									"name": "supSku",
-									"type": "String",
-									"physicalType": "varchar"
+									"type": "Date",
+									"physicalType": "date"
 								}
 							},
 							{
