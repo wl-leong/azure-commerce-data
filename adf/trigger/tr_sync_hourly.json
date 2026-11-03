@@ -15,6 +15,12 @@
 					"referenceName": "pl_sync_openLrLineItem_full",
 					"type": "PipelineReference"
 				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_inventory_delta",
+					"type": "PipelineReference"
+				}
 			}
 		],
 		"type": "ScheduleTrigger",
