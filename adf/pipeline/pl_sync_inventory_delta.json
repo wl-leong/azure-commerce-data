@@ -291,6 +291,20 @@
 								"type": "Expression"
 							},
 							"type": "Guid"
+						},
+						"loadType": {
+							"value": {
+								"value": "@pipeline().parameters.loadType",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"newWatermark": {
+							"value": {
+								"value": "@activity('lkp_new_watermark').output.firstRow.watermarkValue",
+								"type": "Expression"
+							},
+							"type": "DateTime"
 						}
 					}
 				},
