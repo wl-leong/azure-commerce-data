@@ -41,31 +41,31 @@
 				"name": "grossWeight",
 				"type": "decimal",
 				"precision": 18,
-				"scale": 0
+				"scale": 4
 			},
 			{
 				"name": "packageWidth",
 				"type": "decimal",
 				"precision": 18,
-				"scale": 0
+				"scale": 4
 			},
 			{
 				"name": "packageHeight",
 				"type": "decimal",
 				"precision": 18,
-				"scale": 0
+				"scale": 4
 			},
 			{
 				"name": "packageDepth",
 				"type": "decimal",
 				"precision": 18,
-				"scale": 0
+				"scale": 4
 			},
 			{
 				"name": "cbm",
 				"type": "decimal",
 				"precision": 18,
-				"scale": 0
+				"scale": 5
 			},
 			{
 				"name": "eol",
