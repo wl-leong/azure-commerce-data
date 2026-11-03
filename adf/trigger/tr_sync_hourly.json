@@ -9,6 +9,12 @@
 					"referenceName": "pl_sync_openPoLineItem_full",
 					"type": "PipelineReference"
 				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_openLrLineItem_full",
+					"type": "PipelineReference"
+				}
 			}
 		],
 		"type": "ScheduleTrigger",
