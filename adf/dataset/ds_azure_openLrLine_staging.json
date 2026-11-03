@@ -1,0 +1,95 @@
+{
+	"name": "ds_azure_openLrLine_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "openLoadingRequestLineId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lr",
+				"type": "varchar"
+			},
+			{
+				"name": "lrDate",
+				"type": "date"
+			},
+			{
+				"name": "supId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "supplier",
+				"type": "varchar"
+			},
+			{
+				"name": "supSku",
+				"type": "date"
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "modelNo",
+				"type": "varchar"
+			},
+			{
+				"name": "openLrQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "swStart",
+				"type": "date"
+			},
+			{
+				"name": "swEnd",
+				"type": "date"
+			},
+			{
+				"name": "addrId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "warehouseName",
+				"type": "varchar"
+			},
+			{
+				"name": "insertedOn",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "modifiedOn",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "openLoadingRequestLine"
+		}
+	}
+}
