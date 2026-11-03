@@ -7,7 +7,87 @@
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "productCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "productSubCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "productType",
+				"type": "varchar"
+			},
+			{
+				"name": "modelno",
+				"type": "varchar"
+			},
+			{
+				"name": "productShortTitle",
+				"type": "varchar"
+			},
+			{
+				"name": "grossWeight",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "packageWidth",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "packageHeight",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "packageDepth",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "cbm",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 5
+			},
+			{
+				"name": "eol",
+				"type": "bit"
+			},
+			{
+				"name": "firstReceivedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "updateDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "isExcluded",
+				"type": "bit"
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "vw_inventory"
