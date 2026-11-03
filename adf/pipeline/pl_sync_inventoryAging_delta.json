@@ -644,7 +644,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT MAX(updateDate) as watermarkValue \nFROM vw_inventoryAgingBand",
+						"sqlReaderQuery": "SELECT MAX(insertedOn) as watermarkValue \nFROM vw_inventoryAgingBand",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
