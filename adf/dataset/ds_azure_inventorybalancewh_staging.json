@@ -34,9 +34,12 @@
 				"precision": 10
 			},
 			{
-				"name": "virtualInv",
-				"type": "int",
-				"precision": 10
+				"name": "name",
+				"type": "varchar"
+			},
+			{
+				"name": "dropshipRegion",
+				"type": "varchar"
 			},
 			{
 				"name": "updateDate",
