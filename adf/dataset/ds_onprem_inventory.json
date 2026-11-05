@@ -18,6 +18,14 @@
 				"type": "varchar"
 			},
 			{
+				"name": "ASIN",
+				"type": "varchar"
+			},
+			{
+				"name": "supplierSku",
+				"type": "varchar"
+			},
+			{
 				"name": "productCategory",
 				"type": "varchar"
 			},
@@ -76,6 +84,16 @@
 				"type": "datetime",
 				"precision": 23,
 				"scale": 3
+			},
+			{
+				"name": "discontinue",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "newItem",
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "updateDate",

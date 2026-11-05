@@ -22,6 +22,14 @@
 				"type": "varchar"
 			},
 			{
+				"name": "asin",
+				"type": "varchar"
+			},
+			{
+				"name": "supplierSku",
+				"type": "varchar"
+			},
+			{
 				"name": "productCategory",
 				"type": "varchar"
 			},
@@ -66,6 +74,14 @@
 				"type": "decimal",
 				"precision": 18,
 				"scale": 5
+			},
+			{
+				"name": "newItem",
+				"type": "bit"
+			},
+			{
+				"name": "discontinued",
+				"type": "bit"
 			},
 			{
 				"name": "eol",

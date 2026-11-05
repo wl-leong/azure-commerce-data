@@ -25,7 +25,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "SELECT invId, upc, productCategory, productSubCategory, productType, modelno, productShortTitle,\n       grossWeight, packageWidth, packageHeight, packageDepth, cbm, eol, firstReceivedDate,\n       updateDate, isExcluded\nFROM dbo.vw_inventory\nWHERE updateDate >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND updateDate <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
+							"value": "SELECT invId, upc, [ASIN], supplierSku, productCategory, productSubCategory, productType, modelno, productShortTitle, \n\tgrossWeight, packageWidth, packageHeight, packageDepth, cbm, \n  eol, firstReceivedDate, discontinue, newItem, updateDate, isExcluded\nFROM dbo.vw_inventory\nWHERE updateDate >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND updateDate <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -74,6 +74,30 @@
 								},
 								"sink": {
 									"name": "modelNo",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ASIN",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "asin",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "supplierSku",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "supplierSku",
 									"type": "String",
 									"physicalType": "varchar"
 								}
@@ -138,7 +162,7 @@
 									"name": "grossWeight",
 									"type": "Decimal",
 									"physicalType": "decimal",
-									"scale": 0,
+									"scale": 4,
 									"precision": 18
 								}
 							},
@@ -154,7 +178,7 @@
 									"name": "packageWidth",
 									"type": "Decimal",
 									"physicalType": "decimal",
-									"scale": 0,
+									"scale": 4,
 									"precision": 18
 								}
 							},
@@ -170,7 +194,7 @@
 									"name": "packageHeight",
 									"type": "Decimal",
 									"physicalType": "decimal",
-									"scale": 0,
+									"scale": 4,
 									"precision": 18
 								}
 							},
@@ -186,7 +210,7 @@
 									"name": "packageDepth",
 									"type": "Decimal",
 									"physicalType": "decimal",
-									"scale": 0,
+									"scale": 4,
 									"precision": 18
 								}
 							},
@@ -202,15 +226,39 @@
 									"name": "cbm",
 									"type": "Decimal",
 									"physicalType": "decimal",
-									"scale": 0,
+									"scale": 5,
 									"precision": 18
 								}
 							},
 							{
 								"source": {
-									"name": "eol",
+									"name": "newItem",
 									"type": "Int32",
 									"physicalType": "int"
+								},
+								"sink": {
+									"name": "newItem",
+									"type": "Boolean",
+									"physicalType": "bit"
+								}
+							},
+							{
+								"source": {
+									"name": "discontinue",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "discontinued",
+									"type": "Boolean",
+									"physicalType": "bit"
+								}
+							},
+							{
+								"source": {
+									"name": "eol",
+									"type": "Boolean",
+									"physicalType": "bit"
 								},
 								"sink": {
 									"name": "eol",
