@@ -324,7 +324,7 @@
 							"type": "String"
 						},
 						"entityName": {
-							"value": "amzDailySales",
+							"value": "salesAmzDailySales",
 							"type": "String"
 						},
 						"environmentName": {
@@ -354,7 +354,7 @@
 							"type": "String"
 						},
 						"targetObject": {
-							"value": "dbo.amzDailySales",
+							"value": "dbo.salesAmzDaily",
 							"type": "String"
 						}
 					}
