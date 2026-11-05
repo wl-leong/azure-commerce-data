@@ -1,0 +1,104 @@
+{
+	"name": "ds_azure_inventory_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "modelNo",
+				"type": "varchar"
+			},
+			{
+				"name": "asin",
+				"type": "varchar"
+			},
+			{
+				"name": "supplierSku",
+				"type": "varchar"
+			},
+			{
+				"name": "productCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "productSubCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "productType",
+				"type": "varchar"
+			},
+			{
+				"name": "productShortTitle",
+				"type": "varchar"
+			},
+			{
+				"name": "grossWeight",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "packageWidth",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "packageHeight",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "packageDepth",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "cbm",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 5
+			},
+			{
+				"name": "newItem",
+				"type": "bit"
+			},
+			{
+				"name": "discontinued",
+				"type": "bit"
+			},
+			{
+				"name": "eol",
+				"type": "bit"
+			},
+			{
+				"name": "isExcluded",
+				"type": "bit"
+			},
+			{
+				"name": "firstReceivedDate",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "inventory"
+		}
+	}
+}

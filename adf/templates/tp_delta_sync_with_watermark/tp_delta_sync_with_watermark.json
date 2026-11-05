@@ -1,0 +1,936 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name"
+		},
+		"ls_azure_sql": {
+			"type": "string"
+		},
+		"ls_onprem_sql": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_sync_inventory_delta')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_inventory_to_staging",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "lkp_new_watermark",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "SELECT invId, upc, productCategory, productSubCategory, productType, modelno, productShortTitle,\n       grossWeight, packageWidth, packageHeight, packageDepth, cbm, eol, firstReceivedDate,\n       updateDate, isExcluded\nFROM dbo.vw_inventory\nWHERE updateDate >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND updateDate <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "EXEC [staging].[SSP_ClearInventory];",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "invId",
+											"type": "Int64",
+											"physicalType": "bigint"
+										},
+										"sink": {
+											"name": "invId",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "upc",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "upc",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "modelno",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "modelNo",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "productCategory",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "productCategory",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "productSubCategory",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "productSubCategory",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "productType",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "productType",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "productShortTitle",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "productShortTitle",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "grossWeight",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 4,
+											"precision": 18
+										},
+										"sink": {
+											"name": "grossWeight",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 0,
+											"precision": 18
+										}
+									},
+									{
+										"source": {
+											"name": "packageWidth",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 18
+										},
+										"sink": {
+											"name": "packageWidth",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 0,
+											"precision": 18
+										}
+									},
+									{
+										"source": {
+											"name": "packageHeight",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 18
+										},
+										"sink": {
+											"name": "packageHeight",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 0,
+											"precision": 18
+										}
+									},
+									{
+										"source": {
+											"name": "packageDepth",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 18
+										},
+										"sink": {
+											"name": "packageDepth",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 0,
+											"precision": 18
+										}
+									},
+									{
+										"source": {
+											"name": "cbm",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 5,
+											"precision": 18
+										},
+										"sink": {
+											"name": "cbm",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 0,
+											"precision": 18
+										}
+									},
+									{
+										"source": {
+											"name": "eol",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "eol",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "isExcluded",
+											"type": "Boolean",
+											"physicalType": "bit"
+										},
+										"sink": {
+											"name": "isExcluded",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									},
+									{
+										"source": {
+											"name": "firstReceivedDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "firstReceivedDate",
+											"type": "Date",
+											"physicalType": "date"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_onprem_inventory",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_azure_inventory_staging",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "publish_inventory",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_inventory_to_staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SSP_PublishInventory]",
+							"storedProcedureParameters": {
+								"adfRunId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"loadType": {
+									"value": {
+										"value": "@pipeline().parameters.loadType",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"newWatermark": {
+									"value": {
+										"value": "@activity('lkp_new_watermark').output.firstRow.watermarkValue",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('ls_azure_sql')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "start_sync_log",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SSP_DataSyncRun_Start]",
+							"storedProcedureParameters": {
+								"adfRunId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"domain": {
+									"value": "Inventory",
+									"type": "String"
+								},
+								"entityName": {
+									"value": "Inventory",
+									"type": "String"
+								},
+								"environmentName": {
+									"value": "dev",
+									"type": "String"
+								},
+								"factoryName": {
+									"value": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"loadType": {
+									"value": "Delta",
+									"type": "String"
+								},
+								"pipelineName": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"sourceSystem": {
+									"value": "OnPremSQL",
+									"type": "String"
+								},
+								"targetObject": {
+									"value": "dbo.inventory",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('ls_azure_sql')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "complete_sync_log",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "publish_inventory",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SSP_DataSyncRun_Complete]",
+							"storedProcedureParameters": {
+								"adfRunId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"rowsCopied": {
+									"value": {
+										"value": "@activity('copy_inventory_to_staging').output.rowsCopied",
+										"type": "Expression"
+									},
+									"type": "Int64"
+								},
+								"rowsRead": {
+									"value": {
+										"value": "@activity('copy_inventory_to_staging').output.rowsRead",
+										"type": "Expression"
+									},
+									"type": "Int64"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('ls_azure_sql')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "fail_copy_log",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_inventory_to_staging",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SSP_DataSyncRun_Fail]",
+							"storedProcedureParameters": {
+								"adfRunId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"errorCode": {
+									"value": "COPY_FAILED",
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": "Inventory sync failed during staging copy.",
+									"type": "String"
+								},
+								"failedStep": {
+									"value": "Copy to staging failed; inspect ADF diagnostics.",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('ls_azure_sql')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "fail_publish_log",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "publish_inventory",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SSP_DataSyncRun_Fail]",
+							"storedProcedureParameters": {
+								"adfRunId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"errorCode": {
+									"value": "PUBLISH_FAILED",
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": "Inventory publish to table failed",
+									"type": "String"
+								},
+								"failedStep": {
+									"value": "PublishInventory",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('ls_azure_sql')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "fail_complete_log",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "complete_sync_log",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SSP_DataSyncRun_Fail]",
+							"storedProcedureParameters": {
+								"adfRunId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"errorCode": {
+									"value": "COMPLETE_LOG_FAILED",
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": "Complete Sync Log failed",
+									"type": "String"
+								},
+								"failedStep": {
+									"value": "CompleteSyncLog",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "[parameters('ls_azure_sql')]",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "fail activity",
+						"type": "Fail",
+						"dependsOn": [
+							{
+								"activity": "start_sync_log",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"message": "Could not initialize the sync log.",
+							"errorCode": "START_LOG_FAILED"
+						}
+					},
+					{
+						"name": "fail_copy_pipeline",
+						"type": "Fail",
+						"dependsOn": [
+							{
+								"activity": "fail_copy_log",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"message": "Insert to staging inventory failed.",
+							"errorCode": "COPY_FAILED"
+						}
+					},
+					{
+						"name": "fail_publish_pipeline",
+						"type": "Fail",
+						"dependsOn": [
+							{
+								"activity": "fail_publish_log",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"message": "Exec SSP_PublishInventory failed.",
+							"errorCode": "PUBLISH_FAILED"
+						}
+					},
+					{
+						"name": "fail_complete_pipeline",
+						"type": "Fail",
+						"dependsOn": [
+							{
+								"activity": "fail_complete_log",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"message": "Update on complete run sync failed.",
+							"errorCode": "COMPLETE_SYNC_FAILED"
+						}
+					},
+					{
+						"name": "lkp_old_watermark",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "start_sync_log",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'Inventory'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_azure_inventory_staging",
+								"type": "DatasetReference"
+							}
+						}
+					},
+					{
+						"name": "lkp_new_watermark",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "lkp_old_watermark",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT MAX(updateDate) as watermarkValue \nFROM vw_inventory",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_onprem_inventory",
+								"type": "DatasetReference"
+							}
+						}
+					}
+				],
+				"concurrency": 1,
+				"parameters": {
+					"loadType": {
+						"type": "string",
+						"defaultValue": "Delta"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_onprem_inventory')]",
+				"[concat(variables('factoryId'), '/datasets/ds_azure_inventory_staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_onprem_inventory')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('ls_onprem_sql')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "invId",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "upc",
+						"type": "varchar"
+					},
+					{
+						"name": "productCategory",
+						"type": "varchar"
+					},
+					{
+						"name": "productSubCategory",
+						"type": "varchar"
+					},
+					{
+						"name": "productType",
+						"type": "varchar"
+					},
+					{
+						"name": "modelno",
+						"type": "varchar"
+					},
+					{
+						"name": "productShortTitle",
+						"type": "varchar"
+					},
+					{
+						"name": "grossWeight",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "packageWidth",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "packageHeight",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "packageDepth",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "cbm",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 5
+					},
+					{
+						"name": "eol",
+						"type": "bit"
+					},
+					{
+						"name": "firstReceivedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "updateDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "isExcluded",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "vw_inventory"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_azure_inventory_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('ls_azure_sql')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "invId",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "upc",
+						"type": "varchar"
+					},
+					{
+						"name": "modelNo",
+						"type": "varchar"
+					},
+					{
+						"name": "productCategory",
+						"type": "varchar"
+					},
+					{
+						"name": "productSubCategory",
+						"type": "varchar"
+					},
+					{
+						"name": "productType",
+						"type": "varchar"
+					},
+					{
+						"name": "productShortTitle",
+						"type": "varchar"
+					},
+					{
+						"name": "grossWeight",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "packageWidth",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "packageHeight",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "packageDepth",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "cbm",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 5
+					},
+					{
+						"name": "eol",
+						"type": "bit"
+					},
+					{
+						"name": "isExcluded",
+						"type": "bit"
+					},
+					{
+						"name": "firstReceivedDate",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "staging",
+					"table": "inventory"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

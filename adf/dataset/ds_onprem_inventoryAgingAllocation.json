@@ -1,0 +1,72 @@
+{
+	"name": "ds_onprem_inventoryAgingAllocation",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "snapshotDate",
+				"type": "date"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "modelNo",
+				"type": "varchar"
+			},
+			{
+				"name": "productCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "agingQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "rawCost",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "agingBand6mId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "agingBand6m",
+				"type": "varchar"
+			},
+			{
+				"name": "agingBand30dId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "agingBand30d",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vw_inventoryAgingBand"
+		}
+	}
+}
