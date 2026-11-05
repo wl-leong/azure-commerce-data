@@ -18,6 +18,10 @@
 				"type": "date"
 			},
 			{
+				"name": "country",
+				"type": "varchar"
+			},
+			{
 				"name": "corporateId",
 				"type": "int",
 				"precision": 10
