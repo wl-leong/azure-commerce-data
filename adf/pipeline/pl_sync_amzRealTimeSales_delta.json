@@ -581,7 +581,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT MAX(lastModifiedTime) as watermarkValue \nFROM vw_amzRealTimeSales",
+						"sqlReaderQuery": "SELECT MAX(lastModifiedTime) as watermarkValue \nFROM vw_amazonRealTimeSales",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
