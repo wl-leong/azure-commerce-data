@@ -1,0 +1,431 @@
+{
+	"name": "pl_sync_amazonAdDaily",
+	"properties": {
+		"description": "Amazon Ads daily report CSV (Azure Blob, one file per run) -> tech_mcp staging.amazonAdDaily -> dbo.amazonAdDaily. Insert only: publish replaces rows of the same file (full blob path) and keeps other files. Run by tr_blob_amazonAdDaily, or manually with folderPath '<container>/<folder>' and fileName.",
+		"activities": [
+			{
+				"name": "start_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Start]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"factoryName": {
+							"value": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"pipelineName": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"environmentName": {
+							"value": {
+								"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"domain": {
+							"value": "Advertising",
+							"type": "String"
+						},
+						"entityName": {
+							"value": "amazonAdDaily",
+							"type": "String"
+						},
+						"sourceSystem": {
+							"value": "amazonAds",
+							"type": "String"
+						},
+						"targetObject": {
+							"value": "dbo.AmazonAdDaily",
+							"type": "String"
+						},
+						"loadType": {
+							"value": "Delta",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "clear_staging",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[staging].[SSP_ClearAmazonAdDaily]"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "copy_to_staging",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "clear_staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.02:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "fileName",
+								"value": {
+									"value": "@concat(pipeline().parameters.folderPath, '/', pipeline().parameters.fileName)",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": true
+					},
+					"enableStaging": false
+				}
+			},
+			{
+				"name": "publish",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_to_staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:30:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 60
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_PublishAmazonAdDaily]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "complete_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Complete]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"rowsRead": {
+							"value": {
+								"value": "@activity('copy_to_staging').output.rowsRead",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"rowsCopied": {
+							"value": {
+								"value": "@activity('copy_to_staging').output.rowsCopied",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_clear_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "clear_staging",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"failedStep": {
+							"value": "clear_staging",
+							"type": "String"
+						},
+						"errorCode": {
+							"value": {
+								"value": "@activity('clear_staging').error.errorCode",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_copy_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_to_staging",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"failedStep": {
+							"value": "copy_to_staging",
+							"type": "String"
+						},
+						"errorCode": {
+							"value": {
+								"value": "@activity('copy_to_staging').error.errorCode",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_publish_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"failedStep": {
+							"value": "publish",
+							"type": "String"
+						},
+						"errorCode": {
+							"value": {
+								"value": "@activity('publish').error.errorCode",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_clear_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_clear_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "pl_sync_amazonAdDaily failed at clear_staging.",
+					"errorCode": "SYNC_FAILED"
+				}
+			},
+			{
+				"name": "fail_copy_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_copy_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "pl_sync_amazonAdDaily failed at copy_to_staging.",
+					"errorCode": "SYNC_FAILED"
+				}
+			},
+			{
+				"name": "fail_publish_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_publish_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "pl_sync_amazonAdDaily failed at publish.",
+					"errorCode": "SYNC_FAILED"
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"folderPath": {
+				"type": "string",
+				"defaultValue": "amazon-ads/daily"
+			},
+			"fileName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "tech_mcp/advertising"
+		},
+		"annotations": [
+			"tech_mcp"
+		]
+	}
+}
