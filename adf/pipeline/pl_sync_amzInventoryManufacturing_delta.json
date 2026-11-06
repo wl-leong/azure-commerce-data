@@ -44,6 +44,18 @@
 						"mappings": [
 							{
 								"source": {
+									"name": "snapshotDate",
+									"type": "Date",
+									"physicalType": "date"
+								},
+								"sink": {
+									"name": "snapshotDate",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
 									"name": "country",
 									"type": "String",
 									"physicalType": "varchar"
@@ -139,6 +151,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
 								"sink": {
 									"name": "lastModifiedTime",
 									"type": "DateTime",
@@ -167,7 +184,7 @@
 				]
 			},
 			{
-				"name": "publish_inventory",
+				"name": "publish_amzInventoryManufacturing",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -186,7 +203,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[SSP_PublishInventory]",
+					"storedProcedureName": "[dbo].[SSP_PublishInventoryAmzManufacturing]",
 					"storedProcedureParameters": {
 						"adfRunId": {
 							"value": {
@@ -288,7 +305,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_inventory",
+						"activity": "publish_amzInventoryManufacturing",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -314,14 +331,14 @@
 						},
 						"rowsCopied": {
 							"value": {
-								"value": "@activity('copy_inventory_to_staging').output.rowsCopied",
+								"value": "@activity('copy_amzInvManufacturing_to_staging').output.rowsCopied",
 								"type": "Expression"
 							},
 							"type": "Int64"
 						},
 						"rowsRead": {
 							"value": {
-								"value": "@activity('copy_inventory_to_staging').output.rowsRead",
+								"value": "@activity('copy_amzInvManufacturing_to_staging').output.rowsRead",
 								"type": "Expression"
 							},
 							"type": "Int64"
@@ -367,7 +384,7 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory sync failed during staging copy.",
+							"value": "Amz Inventory Manufacturing sync failed during staging copy.",
 							"type": "String"
 						},
 						"failedStep": {
@@ -386,7 +403,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_inventory",
+						"activity": "publish_amzInventoryManufacturing",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -415,11 +432,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory publish to table failed",
+							"value": "Amz Inventory Manufacturing publish to table failed",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "PublishInventory",
+							"value": "PublishAmzInventoryManufacturing",
 							"type": "String"
 						}
 					}
@@ -507,7 +524,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Insert to staging inventory failed.",
+					"message": "Insert to staging Amz Inventory Manufacturing failed.",
 					"errorCode": "COPY_FAILED"
 				}
 			},
