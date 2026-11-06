@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copy_inventory_to_staging",
+				"name": "copy_amzInvManufacturing_to_staging",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -25,7 +25,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "SELECT invId, upc, productCategory, productSubCategory, productType, modelno, productShortTitle,\n       grossWeight, packageWidth, packageHeight, packageDepth, cbm, eol, firstReceivedDate,\n       updateDate, isExcluded\nFROM dbo.vw_inventory\nWHERE updateDate >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND updateDate <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
+							"value": "SELECT snapshotDate, country, corporateId, invId, upc, modelNo, [asin], [openPoQty], [sellableOnHandUnits], lastModifiedTime \nFROM dbo.vw_amazonInventoryManufacturing\nWHERE lastModifiedTime >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND lastModifiedTime <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -33,7 +33,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "EXEC [staging].[SSP_ClearInventory];",
+						"preCopyScript": "EXEC [staging].[SSP_ClearAmzInventoryManufacturing];",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -44,6 +44,30 @@
 						"mappings": [
 							{
 								"source": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
 									"name": "invId",
 									"type": "Int64",
 									"physicalType": "bigint"
@@ -68,7 +92,7 @@
 							},
 							{
 								"source": {
-									"name": "modelno",
+									"name": "modelNo",
 									"type": "String",
 									"physicalType": "varchar"
 								},
@@ -80,166 +104,45 @@
 							},
 							{
 								"source": {
-									"name": "productCategory",
+									"name": "asin",
 									"type": "String",
 									"physicalType": "varchar"
 								},
 								"sink": {
-									"name": "productCategory",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "productSubCategory",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "productSubCategory",
+									"name": "asin",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "productType",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "productType",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "productShortTitle",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "productShortTitle",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "grossWeight",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 4,
-									"precision": 18
-								},
-								"sink": {
-									"name": "grossWeight",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 0,
-									"precision": 18
-								}
-							},
-							{
-								"source": {
-									"name": "packageWidth",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 2,
-									"precision": 18
-								},
-								"sink": {
-									"name": "packageWidth",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 0,
-									"precision": 18
-								}
-							},
-							{
-								"source": {
-									"name": "packageHeight",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 2,
-									"precision": 18
-								},
-								"sink": {
-									"name": "packageHeight",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 0,
-									"precision": 18
-								}
-							},
-							{
-								"source": {
-									"name": "packageDepth",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 2,
-									"precision": 18
-								},
-								"sink": {
-									"name": "packageDepth",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 0,
-									"precision": 18
-								}
-							},
-							{
-								"source": {
-									"name": "cbm",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 5,
-									"precision": 18
-								},
-								"sink": {
-									"name": "cbm",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 0,
-									"precision": 18
-								}
-							},
-							{
-								"source": {
-									"name": "eol",
+									"name": "openPoQty",
 									"type": "Int32",
 									"physicalType": "int"
 								},
 								"sink": {
-									"name": "eol",
-									"type": "Boolean",
-									"physicalType": "bit"
+									"name": "openPoQty",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"name": "isExcluded",
-									"type": "Boolean",
-									"physicalType": "bit"
+									"name": "sellableOnHandUnits",
+									"type": "Int32",
+									"physicalType": "int"
 								},
 								"sink": {
-									"name": "isExcluded",
-									"type": "Boolean",
-									"physicalType": "bit"
+									"name": "sellableOnHandUnits",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
-								"source": {
-									"name": "firstReceivedDate",
+								"sink": {
+									"name": "lastModifiedTime",
 									"type": "DateTime",
 									"physicalType": "datetime"
-								},
-								"sink": {
-									"name": "firstReceivedDate",
-									"type": "Date",
-									"physicalType": "date"
 								}
 							}
 						],
@@ -268,7 +171,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_inventory_to_staging",
+						"activity": "copy_amzInvManufacturing_to_staging",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -435,7 +338,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_inventory_to_staging",
+						"activity": "copy_amzInvManufacturing_to_staging",
 						"dependencyConditions": [
 							"Failed"
 						]
