@@ -45,145 +45,106 @@
 							{
 								"source": {
 									"name": "orderDate",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "Date"
 								},
 								"sink": {
 									"name": "orderDate",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "Date"
 								}
 							},
 							{
 								"source": {
 									"name": "corporateId",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "Int32"
 								},
 								"sink": {
 									"name": "corporateId",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "Int32"
 								}
 							},
 							{
 								"source": {
 									"name": "orderCategory",
-									"type": "String",
-									"physicalType": "char"
+									"type": "String"
 								},
 								"sink": {
 									"name": "orderCategory",
-									"type": "String",
-									"physicalType": "char"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "csId",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "Int32"
 								},
 								"sink": {
 									"name": "csId",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "Int32"
 								}
 							},
 							{
 								"source": {
 									"name": "invId",
-									"type": "Int64",
-									"physicalType": "bigint"
+									"type": "Int64"
 								},
 								"sink": {
 									"name": "invId",
-									"type": "Int64",
-									"physicalType": "bigint"
+									"type": "Int64"
 								}
 							},
 							{
 								"source": {
 									"name": "Asin",
-									"type": "String",
-									"physicalType": "varchar"
+									"type": "String"
 								},
 								"sink": {
 									"name": "asin",
-									"type": "String",
-									"physicalType": "varchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "orderedQty",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "Int32"
 								},
 								"sink": {
 									"name": "orderedQty",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "Int32"
 								}
 							},
 							{
 								"source": {
 									"name": "orderedRevenue",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 4,
-									"precision": 38
+									"type": "Decimal"
 								},
 								"sink": {
 									"name": "orderedRevenue",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 4,
-									"precision": 18
+									"type": "Decimal"
 								}
 							},
 							{
 								"source": {
 									"name": "rebate",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 4,
-									"precision": 38
+									"type": "Decimal"
 								},
 								"sink": {
 									"name": "rebate",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 4,
-									"precision": 18
+									"type": "Decimal"
 								}
 							},
 							{
 								"source": {
 									"name": "modifiedOn",
-									"type": "DateTime",
-									"physicalType": "smalldatetime"
+									"type": "DateTime"
 								},
 								"sink": {
 									"name": "lastModifiedTime",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"type": "DateTime"
 								}
 							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
+						]
 					}
 				},
-				"inputs": [
-					{
-						"referenceName": "ds_onprem_inventory1",
-						"type": "DatasetReference"
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "ds_azure_llyDailySales_staging",
@@ -627,10 +588,6 @@
 						"sqlReaderQuery": "SELECT MAX(modifiedOn) as watermarkValue \nFROM vw_llyDailySales",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "ds_onprem_inventory1",
-						"type": "DatasetReference"
 					}
 				}
 			}
