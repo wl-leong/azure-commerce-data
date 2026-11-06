@@ -1,0 +1,72 @@
+{
+	"name": "ds_azure_llyDailySales_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "dailySalesId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "orderDate",
+				"type": "date"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "orderCategory",
+				"type": "char"
+			},
+			{
+				"name": "csId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "asin",
+				"type": "varchar"
+			},
+			{
+				"name": "orderedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "orderedRevenue",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "rebate",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "lastModifiedTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "lly_dailySales"
+		}
+	}
+}
