@@ -260,7 +260,7 @@
 							"type": "String"
 						},
 						"entityName": {
-							"value": "InventoryManufacturing",
+							"value": "inventoryAmzManufacturing",
 							"type": "String"
 						},
 						"environmentName": {
@@ -584,7 +584,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'AmzInventoryManufacturing'",
+						"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'inventoryAmzManufacturing'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
