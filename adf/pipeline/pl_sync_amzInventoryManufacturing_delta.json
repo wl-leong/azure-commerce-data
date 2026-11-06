@@ -290,7 +290,7 @@
 							"type": "String"
 						},
 						"targetObject": {
-							"value": "dbo.amzInventoryManufacgturing",
+							"value": "dbo.inventoryAmzManufacturing",
 							"type": "String"
 						}
 					}
@@ -541,7 +541,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Exec SSP_PublishInventory failed.",
+					"message": "Exec SSP_PublishInventoryAmzManufacturing failed.",
 					"errorCode": "PUBLISH_FAILED"
 				}
 			},
