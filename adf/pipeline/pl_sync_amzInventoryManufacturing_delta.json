@@ -290,7 +290,7 @@
 							"type": "String"
 						},
 						"targetObject": {
-							"value": "dbo.amzInventoryManufacguring",
+							"value": "dbo.amzInventoryManufacgturing",
 							"type": "String"
 						}
 					}
