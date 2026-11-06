@@ -76,6 +76,23 @@
 				"scale": 5
 			},
 			{
+				"name": "monthlySalesTarget",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "baseSku",
+				"type": "varchar"
+			},
+			{
+				"name": "parentBaseSku",
+				"type": "varchar"
+			},
+			{
+				"name": "sourcingType",
+				"type": "varchar"
+			},
+			{
 				"name": "eol",
 				"type": "bit"
 			},
@@ -86,14 +103,12 @@
 				"scale": 3
 			},
 			{
-				"name": "discontinue",
-				"type": "int",
-				"precision": 10
+				"name": "archive",
+				"type": "bit"
 			},
 			{
 				"name": "newItem",
-				"type": "int",
-				"precision": 10
+				"type": "bit"
 			},
 			{
 				"name": "updateDate",
