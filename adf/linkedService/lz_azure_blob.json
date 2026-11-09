@@ -1,0 +1,11 @@
+{
+	"name": "lz_azure_blob",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://stcommercedataprod.blob.core.windows.net/",
+			"accountKind": "StorageV2"
+		}
+	}
+}
