@@ -13,9 +13,6 @@
 				"type": "string"
 			}
 		},
-		"folder": {
-			"name": "tech_mcp"
-		},
 		"annotations": [
 			"tech_mcp"
 		],
