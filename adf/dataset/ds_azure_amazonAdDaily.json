@@ -1,0 +1,427 @@
+{
+	"name": "ds_azure_amazonAdDaily",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "amazonAdDailyId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "reportYear",
+				"type": "varchar"
+			},
+			{
+				"name": "reportMonth",
+				"type": "varchar"
+			},
+			{
+				"name": "reportDate",
+				"type": "varchar"
+			},
+			{
+				"name": "advertiserAccountId",
+				"type": "varchar"
+			},
+			{
+				"name": "advertiserAccountName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "countryCode",
+				"type": "varchar"
+			},
+			{
+				"name": "adProduct",
+				"type": "varchar"
+			},
+			{
+				"name": "campaignId",
+				"type": "varchar"
+			},
+			{
+				"name": "campaignName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "campaignBudgetAmount",
+				"type": "varchar"
+			},
+			{
+				"name": "campaignDeliveryStatus",
+				"type": "varchar"
+			},
+			{
+				"name": "campaignStartDate",
+				"type": "varchar"
+			},
+			{
+				"name": "campaignBidStrategy",
+				"type": "varchar"
+			},
+			{
+				"name": "campaignCountry",
+				"type": "varchar"
+			},
+			{
+				"name": "budgetCurrency",
+				"type": "varchar"
+			},
+			{
+				"name": "adGroupId",
+				"type": "varchar"
+			},
+			{
+				"name": "adGroupName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "adGroupDeliveryStatus",
+				"type": "varchar"
+			},
+			{
+				"name": "adId",
+				"type": "varchar"
+			},
+			{
+				"name": "adName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "asin",
+				"type": "varchar"
+			},
+			{
+				"name": "advertisedProductName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "advertisedProductMarketplace",
+				"type": "varchar"
+			},
+			{
+				"name": "impressions",
+				"type": "varchar"
+			},
+			{
+				"name": "clicks",
+				"type": "varchar"
+			},
+			{
+				"name": "totalCost",
+				"type": "varchar"
+			},
+			{
+				"name": "sales",
+				"type": "varchar"
+			},
+			{
+				"name": "purchases",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSold",
+				"type": "varchar"
+			},
+			{
+				"name": "salesFromClicks",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesFromClicks",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldFromClicks",
+				"type": "varchar"
+			},
+			{
+				"name": "salesFromViews",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesFromViews",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldFromViews",
+				"type": "varchar"
+			},
+			{
+				"name": "salesPromoted",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesPromoted",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldPromoted",
+				"type": "varchar"
+			},
+			{
+				"name": "salesHalo",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesHalo",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldHalo",
+				"type": "varchar"
+			},
+			{
+				"name": "salesAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "salesFromClicksAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesFromClicksAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldFromClicksAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "salesFromViewsAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesFromViewsAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldFromViewsAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "salesPromotedAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesPromotedAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldPromotedAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "salesHaloAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesHaloAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldHaloAllViews",
+				"type": "varchar"
+			},
+			{
+				"name": "salesNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "salesFromClicksNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesFromClicksNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldFromClicksNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "salesFromViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesFromViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldFromViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "salesNewToBrandPromoted",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesNewToBrandPromoted",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldNewToBrandPromoted",
+				"type": "varchar"
+			},
+			{
+				"name": "salesNewToBrandHalo",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesNewToBrandHalo",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldNewToBrandHalo",
+				"type": "varchar"
+			},
+			{
+				"name": "detailPageViews",
+				"type": "varchar"
+			},
+			{
+				"name": "detailPageViewsFromClicks",
+				"type": "varchar"
+			},
+			{
+				"name": "detailPageViewsFromViews",
+				"type": "varchar"
+			},
+			{
+				"name": "detailPageViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "detailPageViewsFromClicksNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "detailPageViewsFromViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "addToCart",
+				"type": "varchar"
+			},
+			{
+				"name": "addToCartFromClicks",
+				"type": "varchar"
+			},
+			{
+				"name": "addToCartFromViews",
+				"type": "varchar"
+			},
+			{
+				"name": "addToCartNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "addToCartFromClicksNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "addToCartFromViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "brandedSearches",
+				"type": "varchar"
+			},
+			{
+				"name": "brandedSearchesFromClicks",
+				"type": "varchar"
+			},
+			{
+				"name": "brandedSearchesFromViews",
+				"type": "varchar"
+			},
+			{
+				"name": "brandedSearchesNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "brandedSearchesFromClicksNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "brandedSearchesFromViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "brandStorePageViews",
+				"type": "varchar"
+			},
+			{
+				"name": "brandStorePageViewsNewToBrand",
+				"type": "varchar"
+			},
+			{
+				"name": "reviewPageVisits",
+				"type": "varchar"
+			},
+			{
+				"name": "salesOffAmazon",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesOffAmazon",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldOffAmazon",
+				"type": "varchar"
+			},
+			{
+				"name": "salesCombined",
+				"type": "varchar"
+			},
+			{
+				"name": "purchasesCombined",
+				"type": "varchar"
+			},
+			{
+				"name": "unitsSoldCombined",
+				"type": "varchar"
+			},
+			{
+				"name": "fileName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "insertedOnUtc",
+				"type": "datetime2",
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "amazonAdDaily"
+		}
+	}
+}
