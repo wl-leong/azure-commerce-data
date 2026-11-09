@@ -2,6 +2,10 @@
 	"name": "ds_blob_amazonAdDaily_csv",
 	"properties": {
 		"description": "One Amazon Ads daily report CSV in Azure Blob, chosen by containerName/folderPath/fileName. All columns read as text; header row holds the Amazon column names used by the copy mapping.",
+		"linkedServiceName": {
+			"referenceName": "lz_azure_blob",
+			"type": "LinkedServiceReference"
+		},
 		"parameters": {
 			"containerName": {
 				"type": "string"
