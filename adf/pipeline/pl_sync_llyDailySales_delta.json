@@ -310,14 +310,14 @@
 						},
 						"rowsCopied": {
 							"value": {
-								"value": "@activity('copy_inventory_to_staging').output.rowsCopied",
+								"value": "@activity('copy_llysales_to_staging').output.rowsCopied",
 								"type": "Expression"
 							},
 							"type": "Int64"
 						},
 						"rowsRead": {
 							"value": {
-								"value": "@activity('copy_inventory_to_staging').output.rowsRead",
+								"value": "@activity('copy_llysales_to_staging').output.rowsRead",
 								"type": "Expression"
 							},
 							"type": "Int64"
