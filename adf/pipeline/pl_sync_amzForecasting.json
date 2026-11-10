@@ -75,6 +75,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "sellingProgram",
+									"type": "String",
+									"physicalType": "varchar"
+								},
 								"sink": {
 									"name": "sellingProgram",
 									"type": "String",
@@ -95,7 +100,7 @@
 							},
 							{
 								"source": {
-									"name": "asin",
+									"name": "ASIN",
 									"type": "String",
 									"physicalType": "varchar"
 								},
@@ -107,7 +112,7 @@
 							},
 							{
 								"source": {
-									"name": "Week0-23",
+									"name": "p70Week0To23Units",
 									"type": "Decimal",
 									"physicalType": "decimal",
 									"scale": 2,
@@ -123,7 +128,7 @@
 							},
 							{
 								"source": {
-									"name": "Week24-47",
+									"name": "p70Week24To47Units",
 									"type": "Decimal",
 									"physicalType": "decimal",
 									"scale": 2,
@@ -138,6 +143,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
 								"sink": {
 									"name": "lastModifiedTime",
 									"type": "DateTime",
