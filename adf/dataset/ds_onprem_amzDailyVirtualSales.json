@@ -1,0 +1,93 @@
+{
+	"name": "ds_onprem_amzDailyVirtualSales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "orderDate",
+				"type": "date"
+			},
+			{
+				"name": "country",
+				"type": "varchar"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vinvId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ASIN",
+				"type": "varchar"
+			},
+			{
+				"name": "parentAsin",
+				"type": "varchar"
+			},
+			{
+				"name": "msrp",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "orderedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "orderedRevenue",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 2
+			},
+			{
+				"name": "shippedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "shippedRevenue",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 2
+			},
+			{
+				"name": "shippedCOGS",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 2
+			},
+			{
+				"name": "customerReturns",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lastModifiedTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vw_amazonDailyVirtualSales"
+		}
+	}
+}
