@@ -1,0 +1,63 @@
+{
+	"name": "ds_onprem_amzInvManufacturing",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "snapshotDate",
+				"type": "date"
+			},
+			{
+				"name": "country",
+				"type": "varchar"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "modelNo",
+				"type": "varchar"
+			},
+			{
+				"name": "ASIN",
+				"type": "varchar"
+			},
+			{
+				"name": "openPoQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sellableOnHandUnits",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lastModifiedTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vw_amazonInventoryManufacturing"
+		}
+	}
+}

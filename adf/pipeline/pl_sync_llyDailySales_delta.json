@@ -1,0 +1,618 @@
+{
+	"name": "pl_sync_llyDailySales_delta",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_llysales_to_staging",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "lkp_new_watermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "EXEC [staging].[SSP_ClearLlyDailySales];",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "orderDate",
+									"type": "Date"
+								},
+								"sink": {
+									"name": "orderDate",
+									"type": "Date"
+								}
+							},
+							{
+								"source": {
+									"name": "corporateId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "corporateId",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "orderCategory",
+									"type": "String"
+								},
+								"sink": {
+									"name": "orderCategory",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "csId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "csId",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "invId",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "invId",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "ASIN",
+									"type": "varchar"
+								},
+								"sink": {
+									"name": "asin",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "orderedQty",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "orderedQty",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "orderedRevenue",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "orderedRevenue",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "rebate",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "rebate",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "lastModifiedTime",
+									"type": "datetime",
+									"physicalType": "datetime",
+									"scale": 3,
+									"precision": 23
+								},
+								"sink": {
+									"name": "lastModifiedTime",
+									"type": "DateTime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_onprem_llyDailySales",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_azure_llyDailySales_staging",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "publish_llyDailySales",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_llysales_to_staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_PublishllyDailySales]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"loadType": {
+							"value": {
+								"value": "@pipeline().parameters.loadType",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"newWatermark": {
+							"value": {
+								"value": "@activity('lkp_new_watermark').output.firstRow.watermarkValue",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "start_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Start]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"domain": {
+							"value": "sales",
+							"type": "String"
+						},
+						"entityName": {
+							"value": "salesLlyDailySales",
+							"type": "String"
+						},
+						"environmentName": {
+							"value": "dev",
+							"type": "String"
+						},
+						"factoryName": {
+							"value": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"loadType": {
+							"value": "Delta",
+							"type": "String"
+						},
+						"pipelineName": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"sourceSystem": {
+							"value": "OnPremSQL",
+							"type": "String"
+						},
+						"targetObject": {
+							"value": "dbo.salesLlyDaily",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "complete_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish_llyDailySales",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Complete]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"rowsCopied": {
+							"value": {
+								"value": "@activity('copy_llysales_to_staging').output.rowsCopied",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"rowsRead": {
+							"value": {
+								"value": "@activity('copy_llysales_to_staging').output.rowsRead",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_copy_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_llysales_to_staging",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "COPY_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Sales lly Daily Sales sync failed during staging copy.",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_publish_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish_llyDailySales",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "PUBLISH_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Sales Lly Daily Sales publish to table failed",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "PublishLlyDailySales",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_complete_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "complete_sync_log",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "COMPLETE_LOG_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Complete Sync Log failed",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "CompleteSyncLog",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail activity",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Could not initialize the sync log.",
+					"errorCode": "START_LOG_FAILED"
+				}
+			},
+			{
+				"name": "fail_copy_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_copy_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Insert to staging lly daily sales failed.",
+					"errorCode": "COPY_FAILED"
+				}
+			},
+			{
+				"name": "fail_publish_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_publish_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Exec SSP_PublishLlyDailySales failed.",
+					"errorCode": "PUBLISH_FAILED"
+				}
+			},
+			{
+				"name": "fail_complete_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_complete_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Update on complete run sync failed.",
+					"errorCode": "COMPLETE_SYNC_FAILED"
+				}
+			},
+			{
+				"name": "lkp_old_watermark",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'salesLlyDailySales'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_azure_llyDailySales_staging",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "lkp_new_watermark",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "lkp_old_watermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT MAX(modifiedOn) as watermarkValue \nFROM vw_llyDailySales",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_onprem_llyDailySales",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"loadType": {
+				"type": "string",
+				"defaultValue": "Delta"
+			}
+		},
+		"annotations": []
+	}
+}

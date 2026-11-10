@@ -7,10 +7,50 @@
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "invBalanceWhId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "addrID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "balQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "name",
+				"type": "varchar"
+			},
+			{
+				"name": "DropShipRegion",
+				"type": "varchar"
+			},
+			{
+				"name": "updateDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "inv_balanceWh"
+			"table": "vw_inventoryWarehouseBalance"
 		}
 	}
 }

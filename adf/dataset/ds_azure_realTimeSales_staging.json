@@ -1,0 +1,55 @@
+{
+	"name": "ds_azure_realTimeSales_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "realTimeSalesId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "orderDate",
+				"type": "date"
+			},
+			{
+				"name": "country",
+				"type": "varchar"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "asin",
+				"type": "varchar"
+			},
+			{
+				"name": "orderedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "orderedRevenue",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "amz_realTimeSales"
+		}
+	}
+}

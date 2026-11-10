@@ -1,0 +1,56 @@
+{
+	"name": "ds_onprem_amzRealTimeSales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "orderDate",
+				"type": "date"
+			},
+			{
+				"name": "country",
+				"type": "varchar"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ASIN",
+				"type": "varchar"
+			},
+			{
+				"name": "orderedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "orderedRevenue",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 2
+			},
+			{
+				"name": "lastModifiedTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vw_amazonRealTimeSales"
+		}
+	}
+}

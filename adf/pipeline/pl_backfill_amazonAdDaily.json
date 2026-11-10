@@ -1,0 +1,130 @@
+{
+	"name": "pl_backfill_amazonAdDaily",
+	"properties": {
+		"description": "Loads every .csv in folderPath ('<container>/<folder>') by running pl_sync_amazonAdDaily once per file, one at a time. Safe to re-run: each file replaces its own rows. A failed file does not stop the rest; the run ends Failed if any file failed.",
+		"activities": [
+			{
+				"name": "list_files",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_blob_amazonAdDaily_csv",
+						"type": "DatasetReference",
+						"parameters": {
+							"containerName": {
+								"value": "@first(split(pipeline().parameters.folderPath, '/'))",
+								"type": "Expression"
+							},
+							"folderPath": {
+								"value": "@if(contains(pipeline().parameters.folderPath, '/'), substring(pipeline().parameters.folderPath, add(indexOf(pipeline().parameters.folderPath, '/'), 1), sub(length(pipeline().parameters.folderPath), add(indexOf(pipeline().parameters.folderPath, '/'), 1))), '')",
+								"type": "Expression"
+							},
+							"fileName": {
+								"value": "@string('')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": false,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "keep_csv_files",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "list_files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('list_files').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@and(equals(item().type, 'File'), endswith(toLower(item().name), '.csv'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "for_each_file",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "keep_csv_files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('keep_csv_files').output.Value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "run_sync_for_file",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "pl_sync_amazonAdDaily",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"folderPath": {
+										"value": "@pipeline().parameters.folderPath",
+										"type": "Expression"
+									},
+									"fileName": {
+										"value": "@item().name",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"folderPath": {
+				"type": "string",
+				"defaultValue": "amazon/Amazon Daily Ad Report"
+			}
+		},
+		"annotations": [
+			"tech_mcp"
+		]
+	}
+}

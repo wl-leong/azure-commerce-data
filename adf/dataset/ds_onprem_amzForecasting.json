@@ -1,0 +1,61 @@
+{
+	"name": "ds_onprem_amzForecasting",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "forecastGenerationDate",
+				"type": "date"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "country",
+				"type": "varchar"
+			},
+			{
+				"name": "sellingProgram",
+				"type": "varchar"
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ASIN",
+				"type": "varchar"
+			},
+			{
+				"name": "p70Week0To23Units",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 2
+			},
+			{
+				"name": "p70Week24To47Units",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 2
+			},
+			{
+				"name": "lastModifiedTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vw_amazonForecasting"
+		}
+	}
+}

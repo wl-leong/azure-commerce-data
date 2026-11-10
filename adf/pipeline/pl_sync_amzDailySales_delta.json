@@ -1,0 +1,703 @@
+{
+	"name": "pl_sync_amzDailySales_delta",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_amzDailySales_to_staging",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "lkp_new_watermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT orderDate, country, corporateId, invId, [ASIN] AS asin, parentAsin, msrp, orderedQty, orderedRevenue,\n       shippedQty, shippedRevenue, shippedCOGS, customerReturns, lastModifiedTime\nFROM dbo.vw_amazonDailySales\nWHERE lastModifiedTime >  DATEADD(MINUTE, -10, CONVERT(DATETIME, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01T00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff'))}', 126))\n  AND lastModifiedTime <= CONVERT(DATETIME, '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff')}', 126)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "EXEC [staging].[SSP_ClearAmzDailySales];",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "orderDate",
+									"type": "Date",
+									"physicalType": "date"
+								},
+								"sink": {
+									"name": "orderDate",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "invId",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "invId",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "asin",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "asin",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "parentAsin",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "parentAsin",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "msrp",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								},
+								"sink": {
+									"name": "msrp",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "orderedQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "orderedQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "orderedRevenue",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 38
+								},
+								"sink": {
+									"name": "orderedRevenue",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "shippedQty",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "shippedQty",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "shippedRevenue",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 38
+								},
+								"sink": {
+									"name": "shippedRevenue",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "shippedCOGS",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 38
+								},
+								"sink": {
+									"name": "shippedCOGS",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "customerReturns",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "customerReturns",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_onprem_amzDailySales",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_azure_amzDailySales",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "publish_amzDailySales",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_amzDailySales_to_staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_PublishAmzDailySales]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"loadType": {
+							"value": {
+								"value": "@pipeline().parameters.loadType",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"newWatermark": {
+							"value": {
+								"value": "@activity('lkp_new_watermark').output.firstRow.watermarkValue",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "start_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Start]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"domain": {
+							"value": "sales",
+							"type": "String"
+						},
+						"entityName": {
+							"value": "salesAmzDailySales",
+							"type": "String"
+						},
+						"environmentName": {
+							"value": "dev",
+							"type": "String"
+						},
+						"factoryName": {
+							"value": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"loadType": {
+							"value": "Delta",
+							"type": "String"
+						},
+						"pipelineName": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"sourceSystem": {
+							"value": "OnPremSQL",
+							"type": "String"
+						},
+						"targetObject": {
+							"value": "dbo.salesAmzDaily",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "complete_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish_amzDailySales",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Complete]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"rowsCopied": {
+							"value": {
+								"value": "@activity('copy_amzDailySales_to_staging').output.rowsCopied",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"rowsRead": {
+							"value": {
+								"value": "@activity('copy_amzDailySales_to_staging').output.rowsCopied",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_copy_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_amzDailySales_to_staging",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "COPY_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Amz Daily Sales sync failed during staging copy.",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_publish_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish_amzDailySales",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "PUBLISH_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Amz Daily Sales publish to table failed",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "PublishAmzDailySales",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_complete_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "complete_sync_log",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "COMPLETE_LOG_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Complete Sync Log failed",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "CompleteSyncLog",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail activity",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Could not initialize the sync log.",
+					"errorCode": "START_LOG_FAILED"
+				}
+			},
+			{
+				"name": "fail_copy_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_copy_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Insert to staging amz daily sales failed.",
+					"errorCode": "COPY_FAILED"
+				}
+			},
+			{
+				"name": "fail_publish_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_publish_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Exec SSP_PublishAmzSales failed.",
+					"errorCode": "PUBLISH_FAILED"
+				}
+			},
+			{
+				"name": "fail_complete_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_complete_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Update on complete run sync failed.",
+					"errorCode": "COMPLETE_SYNC_FAILED"
+				}
+			},
+			{
+				"name": "lkp_old_watermark",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'salesAmzDailySales'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_azure_amzDailySales",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "lkp_new_watermark",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "lkp_old_watermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT MAX(lastModifiedTime) as watermarkValue \nFROM vw_amazonDailySales",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_onprem_amzDailySales",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"loadType": {
+				"type": "string",
+				"defaultValue": "Delta"
+			}
+		},
+		"annotations": []
+	}
+}

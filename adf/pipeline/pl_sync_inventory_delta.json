@@ -25,7 +25,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "SELECT invId, upc, [ASIN], supplierSku, productCategory, productSubCategory, productType, modelno, productShortTitle, \n\tgrossWeight, packageWidth, packageHeight, packageDepth, cbm, \n  eol, firstReceivedDate, discontinue, newItem, updateDate, isExcluded\nFROM dbo.vw_inventory\nWHERE updateDate >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND updateDate <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
+							"value": "SELECT invId, upc, [ASIN], supplierSku, productCategory, productSubCategory, productType, modelno, productShortTitle,\n       grossWeight, packageWidth, packageHeight, packageDepth, cbm, monthlySalesTarget, baseSku, parentBaseSku, sourcingType,\n       newItem, archive, eol, firstReceivedDate, updateDate, isExcluded\nFROM dbo.vw_inventory\nWHERE updateDate >  DATEADD(MINUTE, -10, CONVERT(DATETIME, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01T00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff'))}', 126))\n  AND updateDate <= CONVERT(DATETIME, '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff')}', 126)",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -232,9 +232,57 @@
 							},
 							{
 								"source": {
-									"name": "newItem",
+									"name": "monthlySalesTarget",
 									"type": "Int32",
 									"physicalType": "int"
+								},
+								"sink": {
+									"name": "monthlySalesTarget",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "baseSku",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "baseSku",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "parentBaseSku",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "parentBaseSku",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "sourcingType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "sourcingType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "newItem",
+									"type": "Boolean",
+									"physicalType": "bit"
 								},
 								"sink": {
 									"name": "newItem",
@@ -244,12 +292,12 @@
 							},
 							{
 								"source": {
-									"name": "discontinue",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "archive",
+									"type": "Boolean",
+									"physicalType": "bit"
 								},
 								"sink": {
-									"name": "discontinued",
+									"name": "archive",
 									"type": "Boolean",
 									"physicalType": "bit"
 								}

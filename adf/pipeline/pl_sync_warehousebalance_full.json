@@ -40,7 +40,7 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "invBalanceWHid",
+									"name": "invBalanceWhId",
 									"type": "Int64",
 									"physicalType": "bigint"
 								},
@@ -64,7 +64,7 @@
 							},
 							{
 								"source": {
-									"name": "invID",
+									"name": "invId",
 									"type": "Int64",
 									"physicalType": "bigint"
 								},
@@ -88,7 +88,7 @@
 							},
 							{
 								"source": {
-									"name": "qty",
+									"name": "balQty",
 									"type": "Int32",
 									"physicalType": "int"
 								},
@@ -100,14 +100,26 @@
 							},
 							{
 								"source": {
-									"name": "virtualInv",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "name",
+									"type": "String",
+									"physicalType": "varchar"
 								},
 								"sink": {
-									"name": "virtualInv",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "DropShipRegion",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "dropshipRegion",
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{

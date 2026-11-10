@@ -1,0 +1,48 @@
+{
+	"name": "ds_blob_amazonAdDaily_csv",
+	"properties": {
+		"description": "One Amazon Ads daily report CSV in Azure Blob, chosen by containerName/folderPath/fileName. All columns read as text; header row holds the Amazon column names used by the copy mapping.",
+		"linkedServiceName": {
+			"referenceName": "lz_azure_blob",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"containerName": {
+				"type": "string"
+			},
+			"folderPath": {
+				"type": "string"
+			},
+			"fileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [
+			"tech_mcp"
+		],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().fileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folderPath",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().containerName",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"encodingName": "UTF-8",
+			"escapeChar": "\"",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

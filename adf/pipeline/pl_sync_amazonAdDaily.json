@@ -1,0 +1,1358 @@
+{
+	"name": "pl_sync_amazonAdDaily",
+	"properties": {
+		"description": "Amazon Ads daily report CSV (Azure Blob, one file per run) -> tech_mcp staging.amazonAdDaily -> dbo.amazonAdDaily. Insert only: publish replaces rows of the same file (full blob path) and keeps other files. Run by tr_blob_amazonAdDaily, or manually with folderPath '<container>/<folder>' and fileName.",
+		"activities": [
+			{
+				"name": "start_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Start]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"factoryName": {
+							"value": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"pipelineName": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"environmentName": {
+							"value": {
+								"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"domain": {
+							"value": "Advertising",
+							"type": "String"
+						},
+						"entityName": {
+							"value": "amazonAdDaily",
+							"type": "String"
+						},
+						"sourceSystem": {
+							"value": "amazonAds",
+							"type": "String"
+						},
+						"targetObject": {
+							"value": "dbo.AmazonAdDaily",
+							"type": "String"
+						},
+						"loadType": {
+							"value": "Delta",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "clear_staging",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[staging].[SSP_ClearAmazonAdDaily]"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "copy_to_staging",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "clear_staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.02:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "fileName",
+								"value": {
+									"value": "@concat(pipeline().parameters.folderPath, '/', pipeline().parameters.fileName)",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Year",
+									"type": "String"
+								},
+								"sink": {
+									"name": "reportYear"
+								}
+							},
+							{
+								"source": {
+									"name": "Month",
+									"type": "String"
+								},
+								"sink": {
+									"name": "reportMonth"
+								}
+							},
+							{
+								"source": {
+									"name": "Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "reportDate"
+								}
+							},
+							{
+								"source": {
+									"name": "Advertiser account ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "advertiserAccountId"
+								}
+							},
+							{
+								"source": {
+									"name": "Advertiser account name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "advertiserAccountName"
+								}
+							},
+							{
+								"source": {
+									"name": "Country",
+									"type": "String"
+								},
+								"sink": {
+									"name": "country"
+								}
+							},
+							{
+								"source": {
+									"name": "Country code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "countryCode"
+								}
+							},
+							{
+								"source": {
+									"name": "Ad product",
+									"type": "String"
+								},
+								"sink": {
+									"name": "adProduct"
+								}
+							},
+							{
+								"source": {
+									"name": "Campaign ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "campaignId"
+								}
+							},
+							{
+								"source": {
+									"name": "Campaign name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "campaignName"
+								}
+							},
+							{
+								"source": {
+									"name": "Campaign budget amount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "campaignBudgetAmount"
+								}
+							},
+							{
+								"source": {
+									"name": "Campaign delivery status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "campaignDeliveryStatus"
+								}
+							},
+							{
+								"source": {
+									"name": "Campaign start date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "campaignStartDate"
+								}
+							},
+							{
+								"source": {
+									"name": "Campaign bid strategy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "campaignBidStrategy"
+								}
+							},
+							{
+								"source": {
+									"name": "Campaign country",
+									"type": "String"
+								},
+								"sink": {
+									"name": "campaignCountry"
+								}
+							},
+							{
+								"source": {
+									"name": "Budget currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "budgetCurrency"
+								}
+							},
+							{
+								"source": {
+									"name": "Ad group ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "adGroupId"
+								}
+							},
+							{
+								"source": {
+									"name": "Ad group name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "adGroupName"
+								}
+							},
+							{
+								"source": {
+									"name": "Ad group delivery status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "adGroupDeliveryStatus"
+								}
+							},
+							{
+								"source": {
+									"name": "Ad ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "adId"
+								}
+							},
+							{
+								"source": {
+									"name": "Ad name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "adName"
+								}
+							},
+							{
+								"source": {
+									"name": "Advertised product ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "asin"
+								}
+							},
+							{
+								"source": {
+									"name": "Advertised product name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "advertisedProductName"
+								}
+							},
+							{
+								"source": {
+									"name": "Advertised product marketplace",
+									"type": "String"
+								},
+								"sink": {
+									"name": "advertisedProductMarketplace"
+								}
+							},
+							{
+								"source": {
+									"name": "Impressions",
+									"type": "String"
+								},
+								"sink": {
+									"name": "impressions"
+								}
+							},
+							{
+								"source": {
+									"name": "Clicks",
+									"type": "String"
+								},
+								"sink": {
+									"name": "clicks"
+								}
+							},
+							{
+								"source": {
+									"name": "Total cost",
+									"type": "String"
+								},
+								"sink": {
+									"name": "totalCost"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales",
+									"type": "String"
+								},
+								"sink": {
+									"name": "sales"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchases"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSold"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales from clicks",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesFromClicks"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases from clicks",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesFromClicks"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold from clicks",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldFromClicks"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales from views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesFromViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases from views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesFromViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold from views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldFromViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (promoted)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesPromoted"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (promoted)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesPromoted"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (promoted)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldPromoted"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (halo)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesHalo"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (halo)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesHalo"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (halo)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldHalo"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales from clicks (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesFromClicksAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases from clicks (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesFromClicksAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold from clicks (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldFromClicksAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales from views (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesFromViewsAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases from views (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesFromViewsAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold from views (all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldFromViewsAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (promoted, all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesPromotedAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (promoted, all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesPromotedAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (promoted, all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldPromotedAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (halo, all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesHaloAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (halo, all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesHaloAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (halo, all views)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldHaloAllViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales from clicks (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesFromClicksNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases from clicks (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesFromClicksNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold from clicks (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldFromClicksNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales from views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesFromViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases from views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesFromViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold from views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldFromViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (new to brand, promoted)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesNewToBrandPromoted"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (new to brand, promoted)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesNewToBrandPromoted"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (new to brand, promoted)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldNewToBrandPromoted"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (new to brand, halo)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesNewToBrandHalo"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (new to brand, halo)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesNewToBrandHalo"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (new to brand, halo)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldNewToBrandHalo"
+								}
+							},
+							{
+								"source": {
+									"name": "Detail page views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "detailPageViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Detail page views from clicks",
+									"type": "String"
+								},
+								"sink": {
+									"name": "detailPageViewsFromClicks"
+								}
+							},
+							{
+								"source": {
+									"name": "Detail page views from views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "detailPageViewsFromViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Detail page views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "detailPageViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Detail page views from clicks (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "detailPageViewsFromClicksNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Detail page views from views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "detailPageViewsFromViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Add to cart",
+									"type": "String"
+								},
+								"sink": {
+									"name": "addToCart"
+								}
+							},
+							{
+								"source": {
+									"name": "Add to cart from clicks",
+									"type": "String"
+								},
+								"sink": {
+									"name": "addToCartFromClicks"
+								}
+							},
+							{
+								"source": {
+									"name": "Add to cart from views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "addToCartFromViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Add to cart (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "addToCartNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Add to cart from clicks (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "addToCartFromClicksNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Add to cart from views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "addToCartFromViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Branded searches",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandedSearches"
+								}
+							},
+							{
+								"source": {
+									"name": "Branded searches from clicks",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandedSearchesFromClicks"
+								}
+							},
+							{
+								"source": {
+									"name": "Branded searches from views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandedSearchesFromViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Branded searches (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandedSearchesNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Branded searches from clicks (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandedSearchesFromClicksNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Branded searches from views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandedSearchesFromViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Brand store page views",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandStorePageViews"
+								}
+							},
+							{
+								"source": {
+									"name": "Brand store page views (new to brand)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brandStorePageViewsNewToBrand"
+								}
+							},
+							{
+								"source": {
+									"name": "Review page visits",
+									"type": "String"
+								},
+								"sink": {
+									"name": "reviewPageVisits"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (off-Amazon)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesOffAmazon"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (off-Amazon)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesOffAmazon"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (off-Amazon)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldOffAmazon"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (combined)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "salesCombined"
+								}
+							},
+							{
+								"source": {
+									"name": "Purchases (combined)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "purchasesCombined"
+								}
+							},
+							{
+								"source": {
+									"name": "Units sold (combined)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitsSoldCombined"
+								}
+							},
+							{
+								"source": {
+									"name": "fileName",
+									"type": "String"
+								},
+								"sink": {
+									"name": "fileName"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_blob_amazonAdDaily_csv",
+						"type": "DatasetReference",
+						"parameters": {
+							"containerName": "@first(split(pipeline().parameters.folderPath, '/'))",
+							"folderPath": {
+								"value": "@if(contains(pipeline().parameters.folderPath, '/'), substring(pipeline().parameters.folderPath, add(indexOf(pipeline().parameters.folderPath, '/'), 1), sub(length(pipeline().parameters.folderPath), add(indexOf(pipeline().parameters.folderPath, '/'), 1))), '')",
+								"type": "Expression"
+							},
+							"fileName": "@pipeline().parameters.fileName"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_azure_amazonAdDaily",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "publish",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_to_staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:30:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 60
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_PublishAmazonAdDaily]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "complete_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Complete]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"rowsRead": {
+							"value": {
+								"value": "@activity('copy_to_staging').output.rowsRead",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"rowsCopied": {
+							"value": {
+								"value": "@activity('copy_to_staging').output.rowsCopied",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_clear_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "clear_staging",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"failedStep": {
+							"value": "clear_staging",
+							"type": "String"
+						},
+						"errorCode": {
+							"value": {
+								"value": "@activity('clear_staging').error.errorCode",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_copy_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_to_staging",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"failedStep": {
+							"value": "copy_to_staging",
+							"type": "String"
+						},
+						"errorCode": {
+							"value": {
+								"value": "@activity('copy_to_staging').error.errorCode",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_publish_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"failedStep": {
+							"value": "publish",
+							"type": "String"
+						},
+						"errorCode": {
+							"value": {
+								"value": "@activity('publish').error.errorCode",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_clear_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_clear_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "pl_sync_amazonAdDaily failed at clear_staging.",
+					"errorCode": "SYNC_FAILED"
+				}
+			},
+			{
+				"name": "fail_copy_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_copy_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "pl_sync_amazonAdDaily failed at copy_to_staging.",
+					"errorCode": "SYNC_FAILED"
+				}
+			},
+			{
+				"name": "fail_publish_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_publish_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "pl_sync_amazonAdDaily failed at publish.",
+					"errorCode": "SYNC_FAILED"
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"folderPath": {
+				"type": "string",
+				"defaultValue": "amazon-ads/daily"
+			},
+			"fileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [
+			"tech_mcp"
+		]
+	}
+}

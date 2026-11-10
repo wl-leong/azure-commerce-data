@@ -53,15 +53,6 @@
 			{
 				"name": "agingBand6m",
 				"type": "varchar"
-			},
-			{
-				"name": "agingBand30dId",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "agingBand30d",
-				"type": "varchar"
 			}
 		],
 		"typeProperties": {

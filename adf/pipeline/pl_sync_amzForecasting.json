@@ -1,0 +1,547 @@
+{
+	"name": "pl_sync_amzForecasting",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_amzForecasting_to_staging",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "EXEC [staging].[SSP_ClearAmazonForecasting];",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "forecastGenerationDate",
+									"type": "Date",
+									"physicalType": "date"
+								},
+								"sink": {
+									"name": "forecastGenerationDate",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "corporateId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "sellingProgram",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "sellingProgram",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "invId",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "invId",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "ASIN",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "asin",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "p70Week0To23Units",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 38
+								},
+								"sink": {
+									"name": "p70Week0To23Units",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "p70Week24To47Units",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 38
+								},
+								"sink": {
+									"name": "p70Week24To47Units",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_onprem_amzForecasting",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_azure_amzForecasting_staging",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "publish_amz forecasting_summary",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_amzForecasting_to_staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_PublishAmazonForecasting]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "start_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Start]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"domain": {
+							"value": "Amazon",
+							"type": "String"
+						},
+						"entityName": {
+							"value": "amazonForecasting",
+							"type": "String"
+						},
+						"environmentName": {
+							"value": "dev",
+							"type": "String"
+						},
+						"factoryName": {
+							"value": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"loadType": {
+							"value": "Full",
+							"type": "String"
+						},
+						"pipelineName": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"sourceSystem": {
+							"value": "OnPremSQL",
+							"type": "String"
+						},
+						"targetObject": {
+							"value": "dbo.amazonForecasting",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "complete_sync_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish_amz forecasting_summary",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Complete]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"rowsCopied": {
+							"value": {
+								"value": "@activity('copy_amzForecasting_to_staging').output.rowsCopied",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"rowsRead": {
+							"value": {
+								"value": "@activity('copy_amzForecasting_to_staging').output.rowsRead",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_copy_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_amzForecasting_to_staging",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "COPY_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Amazon forecasting sync failed during staging copy.",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_publish_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "publish_amz forecasting_summary",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "PUBLISH_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Inventory publish to summary table failed",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "PublishInventoryBalanceSummary",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail_complete_log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "complete_sync_log",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SSP_DataSyncRun_Fail]",
+					"storedProcedureParameters": {
+						"adfRunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"errorCode": {
+							"value": "COMPLETE_LOG_FAILED",
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": "Complete Sync Log failed",
+							"type": "String"
+						},
+						"failedStep": {
+							"value": "CompleteSyncLog",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "fail activity",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "start_sync_log",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Could not initialize the sync log.",
+					"errorCode": "START_LOG_FAILED"
+				}
+			},
+			{
+				"name": "fail_copy_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_copy_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Insert to staging ODS DailyBalanceRefresh failed.",
+					"errorCode": "COPY_FAILED"
+				}
+			},
+			{
+				"name": "fail_publish_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_publish_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Exec SSP_PublishInventoryBalanceSummary failed.",
+					"errorCode": "PUBLISH_FAILED"
+				}
+			},
+			{
+				"name": "fail_complete_pipeline",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "fail_complete_log",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Update on complete run sync failed.",
+					"errorCode": "COMPLETE_SYNC_FAILED"
+				}
+			}
+		],
+		"concurrency": 1,
+		"annotations": []
+	}
+}
