@@ -22,25 +22,35 @@
 				"type": "varchar"
 			},
 			{
+				"name": "sellingProgram",
+				"type": "varchar"
+			},
+			{
 				"name": "invId",
 				"type": "bigint",
 				"precision": 19
 			},
 			{
-				"name": "asin",
+				"name": "ASIN",
 				"type": "varchar"
 			},
 			{
-				"name": "Week0-23",
+				"name": "p70Week0To23Units",
 				"type": "decimal",
 				"precision": 38,
 				"scale": 2
 			},
 			{
-				"name": "Week24-47",
+				"name": "p70Week24To47Units",
 				"type": "decimal",
 				"precision": 38,
 				"scale": 2
+			},
+			{
+				"name": "lastModifiedTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			}
 		],
 		"typeProperties": {
