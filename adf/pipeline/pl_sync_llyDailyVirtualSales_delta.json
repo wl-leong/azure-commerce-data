@@ -560,7 +560,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'Inventory'",
+						"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'SalesLlyDailyVirtualSales'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
