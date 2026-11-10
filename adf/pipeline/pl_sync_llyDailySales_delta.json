@@ -23,11 +23,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": {
-							"value": "SELECT orderDate, corporateId, orderCategory, csId, invId, [Asin], orderedQty, orderedRevenue, rebate, modifiedOn\nFROM dbo.vw_llyDailySales\nWHERE modifiedOn >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND modifiedOn <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
-							"type": "Expression"
-						},
+						"type": "AzureSqlSource",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -94,8 +90,9 @@
 							},
 							{
 								"source": {
-									"name": "Asin",
-									"type": "String"
+									"name": "asin",
+									"type": "varchar",
+									"physicalType": "varchar"
 								},
 								"sink": {
 									"name": "asin",
@@ -134,17 +131,31 @@
 							},
 							{
 								"source": {
-									"name": "modifiedOn",
-									"type": "DateTime"
+									"name": "lastModifiedTime",
+									"type": "datetime",
+									"physicalType": "datetime",
+									"scale": 3,
+									"precision": 23
 								},
 								"sink": {
 									"name": "lastModifiedTime",
 									"type": "DateTime"
 								}
 							}
-						]
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
 					}
 				},
+				"inputs": [
+					{
+						"referenceName": "ds_azure_llyDailySales_staging",
+						"type": "DatasetReference"
+					}
+				],
 				"outputs": [
 					{
 						"referenceName": "ds_azure_llyDailySales_staging",
