@@ -1,0 +1,61 @@
+{
+	"name": "ds_azure_llyDailyVirtualSales_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "lly_dailyVirtualSalesId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "shipDate",
+				"type": "date"
+			},
+			{
+				"name": "orderType",
+				"type": "varchar"
+			},
+			{
+				"name": "csId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vInvId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "invID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "shippedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lastModifiedOn",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "lly_dailyVirtualSales"
+		}
+	}
+}
