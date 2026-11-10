@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copy_inventory_to_staging",
+				"name": "copy_llysales_to_staging",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -23,7 +23,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
+						"type": "SqlServerSource",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -90,9 +90,8 @@
 							},
 							{
 								"source": {
-									"name": "asin",
-									"type": "varchar",
-									"physicalType": "varchar"
+									"name": "ASIN",
+									"type": "varchar"
 								},
 								"sink": {
 									"name": "asin",
@@ -152,7 +151,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_azure_llyDailySales_staging",
+						"referenceName": "ds_onprem_llyDailySales",
 						"type": "DatasetReference"
 					}
 				],
@@ -168,7 +167,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_inventory_to_staging",
+						"activity": "copy_llysales_to_staging",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -335,7 +334,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_inventory_to_staging",
+						"activity": "copy_llysales_to_staging",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -599,6 +598,10 @@
 						"sqlReaderQuery": "SELECT MAX(modifiedOn) as watermarkValue \nFROM vw_llyDailySales",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_onprem_llyDailySales",
+						"type": "DatasetReference"
 					}
 				}
 			}
