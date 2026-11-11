@@ -1,0 +1,68 @@
+{
+	"name": "ds_onprem_virtualinventory",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "entryID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "indCtn",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vInvID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "invID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "qty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "qtyPC",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "enterDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "enterBy",
+				"type": "varchar"
+			},
+			{
+				"name": "status",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "inv_virtual"
+		}
+	}
+}

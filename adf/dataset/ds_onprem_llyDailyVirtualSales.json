@@ -1,0 +1,56 @@
+{
+	"name": "ds_onprem_llyDailyVirtualSales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "shipDate",
+				"type": "date"
+			},
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "orderType",
+				"type": "varchar"
+			},
+			{
+				"name": "csId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vinvId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "shippedQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lastModifiedOn",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vw_llyDailyVirtualSales"
+		}
+	}
+}
