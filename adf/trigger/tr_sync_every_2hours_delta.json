@@ -19,7 +19,7 @@
 					"type": "PipelineReference"
 				},
 				"parameters": {
-					"loadType": "Full"
+					"loadType": "Delta"
 				}
 			}
 		],
