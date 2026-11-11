@@ -40,6 +40,18 @@
 						"mappings": [
 							{
 								"source": {
+									"name": "lrDetailsEntryId",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "openLoadingRequestLineId",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
 									"name": "corporateId",
 									"type": "Int32",
 									"physicalType": "int"
@@ -122,7 +134,7 @@
 									"name": "supCost",
 									"type": "Decimal",
 									"physicalType": "decimal",
-									"scale": 0,
+									"scale": 2,
 									"precision": 18
 								}
 							},
