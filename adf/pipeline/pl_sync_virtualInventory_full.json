@@ -39,6 +39,13 @@
 						"type": "TabularTranslator",
 						"mappings": [
 							{
+								"sink": {
+									"name": "inventoryVirtualId",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
 								"source": {
 									"name": "corporateId",
 									"type": "Int32",
@@ -202,7 +209,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
