@@ -62,12 +62,6 @@
 				"type": "varchar"
 			},
 			{
-				"name": "insertedOn",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
-			},
-			{
 				"name": "modifiedOn",
 				"type": "datetime",
 				"precision": 23,
