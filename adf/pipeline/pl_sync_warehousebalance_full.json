@@ -342,11 +342,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory warehouse balance sync failed during staging copy.",
+							"value": "Copy to staging failed; inspect ADF diagnostics.",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"value": "copy_warehousebalance_to_staging",
 							"type": "String"
 						}
 					}
