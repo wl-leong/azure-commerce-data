@@ -346,7 +346,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
@@ -466,11 +466,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory open lr sync failed during staging copy.",
+							"value": "Copy to staging failed; inspect ADF diagnostics.",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"value": "Inventory open lr sync failed during staging copy. ",
 							"type": "String"
 						}
 					}
