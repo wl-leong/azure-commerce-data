@@ -2,7 +2,7 @@
 	"name": "tr_sync_nightly_full",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
