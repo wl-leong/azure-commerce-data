@@ -14,8 +14,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -25,7 +25,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "SELECT shipDate,  corporateId,  orderType, csId, vinvId, invId,  shippedQty, lastModifiedOn\nFROM dbo.vw_llyDailyVirtualSales\nWHERE lastModifiedOn >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND lastModifiedOn <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
+							"value": "SELECT shipDate, corporateId, orderType, csId, vinvId, invId, shippedQty, lastModifiedOn\nFROM dbo.fn_llyDailyVirtualSales(\n    DATEADD(MINUTE, -30, CONVERT(DATETIME, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01T00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff'))}', 126)),\n    CONVERT(DATETIME, '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff')}', 126))",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -171,8 +171,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -214,8 +214,8 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -240,7 +240,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
@@ -251,7 +251,7 @@
 							"type": "String"
 						},
 						"loadType": {
-							"value": "Delta",
+							"value": "@pipeline().parameters.loadType",
 							"type": "String"
 						},
 						"pipelineName": {
@@ -288,8 +288,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -338,8 +338,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -386,8 +386,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -434,8 +434,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -550,8 +550,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -592,7 +592,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT MAX(lastModifiedOn) as watermarkValue \nFROM vw_llyDailyVirtualSales",
+						"sqlReaderQuery": "SELECT CASE WHEN a.w > b.w THEN a.w ELSE b.w END AS watermarkValue\nFROM (SELECT MAX(modifiedon) AS w FROM dbo.so_shpd_created) a\nCROSS JOIN (SELECT MAX(modifiedon) AS w FROM dbo.so_shpd) b",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
