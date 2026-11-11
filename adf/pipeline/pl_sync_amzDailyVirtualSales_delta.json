@@ -366,7 +366,7 @@
 							"type": "String"
 						},
 						"targetObject": {
-							"value": "dbo.salesAmzDailyVirtual",
+							"value": "dbo.salesLlyDailyVirtualSales",
 							"type": "String"
 						}
 					}
