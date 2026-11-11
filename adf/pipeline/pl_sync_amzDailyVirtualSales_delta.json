@@ -600,7 +600,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Insert to staging inventory failed.",
+					"message": "Insert to staging amazon daily virtual sales failed.",
 					"errorCode": "COPY_FAILED"
 				}
 			},
