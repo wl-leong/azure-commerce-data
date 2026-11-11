@@ -1,8 +1,8 @@
 {
-	"name": "tr_sync_hourly",
+	"name": "tr_sync_hourly_delta",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
@@ -20,6 +20,9 @@
 				"pipelineReference": {
 					"referenceName": "pl_sync_inventory_delta",
 					"type": "PipelineReference"
+				},
+				"parameters": {
+					"loadType": "Delta"
 				}
 			}
 		],
