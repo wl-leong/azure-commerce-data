@@ -14,8 +14,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -371,8 +371,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -414,8 +414,8 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -440,7 +440,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
@@ -451,7 +451,7 @@
 							"type": "String"
 						},
 						"loadType": {
-							"value": "Delta",
+							"value": "@pipeline().parameters.loadType",
 							"type": "String"
 						},
 						"pipelineName": {
@@ -488,8 +488,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -538,8 +538,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -560,11 +560,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory sync failed during staging copy.",
+							"value": "Copy to staging failed; inspect ADF diagnostics.",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"value": "Inventory sync failed during staging copy.",
 							"type": "String"
 						}
 					}
@@ -586,8 +586,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -634,8 +634,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -750,8 +750,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -782,8 +782,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false

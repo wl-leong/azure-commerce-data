@@ -18,7 +18,7 @@
 			},
 			{
 				"pipelineReference": {
-					"referenceName": "pl_sync_inventory_delta",
+					"referenceName": "pl_sync_virtualInventory_full",
 					"type": "PipelineReference"
 				}
 			}

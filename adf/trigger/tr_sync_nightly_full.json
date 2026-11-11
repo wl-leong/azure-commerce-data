@@ -1,0 +1,32 @@
+{
+	"name": "tr_sync_nightly_full",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_inventory_delta",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"loadType": "Full"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2026-11-10T01:00:00",
+				"timeZone": "Singapore Standard Time",
+				"schedule": {
+					"hours": [
+						1
+					]
+				}
+			}
+		}
+	}
+}

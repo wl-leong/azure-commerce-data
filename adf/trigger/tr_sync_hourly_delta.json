@@ -1,0 +1,27 @@
+{
+	"name": "tr_sync_hourly_delta",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_inventory_delta",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"loadType": "Delta"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2026-11-11T06:20:00",
+				"timeZone": "Singapore Standard Time"
+			}
+		}
+	}
+}
