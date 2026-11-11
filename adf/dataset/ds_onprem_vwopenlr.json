@@ -7,7 +7,92 @@
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LR",
+				"type": "varchar"
+			},
+			{
+				"name": "lrDate",
+				"type": "date"
+			},
+			{
+				"name": "supId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "company",
+				"type": "varchar"
+			},
+			{
+				"name": "supSku",
+				"type": "varchar"
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "modelNo",
+				"type": "varchar"
+			},
+			{
+				"name": "openLrQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "supCost",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "swStart",
+				"type": "date"
+			},
+			{
+				"name": "swEnd",
+				"type": "date"
+			},
+			{
+				"name": "addrId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "warehouseName",
+				"type": "varchar"
+			},
+			{
+				"name": "insertedOn",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "modifiedOn",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "lrDetailsEntryId",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "vw_openlr"
