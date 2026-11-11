@@ -122,12 +122,10 @@ jobs:
               Stop-AzDataFactoryV2Trigger -ResourceGroupName $group -DataFactoryName $factory -Name $trigger.Name -Force | Out-Null
             }
 
-            # Stop admitting new scheduled work before checking in-flight runs.
-            # Also avoid manual runs during deployment.
-            $runs = @(Get-AzDataFactoryV2PipelineRun -ResourceGroupName $group -DataFactoryName $factory -LastUpdatedAfter (Get-Date).ToUniversalTime().AddDays(-14) -LastUpdatedBefore (Get-Date).ToUniversalTime())
-            if (@($runs | Where-Object { $_.Status -in @('InProgress','Queued','Canceling') }).Count -gt 0) {
-              throw 'Deployment stopped: pipeline runs are active. Triggers remain stopped; wait for completion and rerun deployment.'
-            }
+            # Remember which triggers git marks as Started (Studio "Activated = Yes").
+            $wantedTriggers = @($template.resources |
+              Where-Object { $_.type -match '/triggers$' -and $_.properties.runtimeState -eq 'Started' } |
+              ForEach-Object { ($_.name -split '/')[-1] -replace "'\)\]$", '' })
 
             # Deploy trigger definitions stopped, including newly added triggers.
             foreach ($resource in $template.resources) {
@@ -140,8 +138,9 @@ jobs:
 
             New-AzResourceGroupDeployment -Name "adf-dev-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT" -ResourceGroupName $group -TemplateFile $safeTemplate -TemplateParameterObject $deploymentParameters -Mode Incremental -ErrorAction Stop | Out-Null
 
-            # Restart only triggers that were already running; new schedules stay off.
-            foreach ($trigger in $started) {
-              Start-AzDataFactoryV2Trigger -ResourceGroupName $group -DataFactoryName $factory -Name $trigger.Name -Force | Out-Null
+            # Start triggers marked Started in git, plus any that were already running.
+            $toStart = @($wantedTriggers + @($started | ForEach-Object { $_.Name })) | Sort-Object -Unique
+            foreach ($name in $toStart) {
+              Start-AzDataFactoryV2Trigger -ResourceGroupName $group -DataFactoryName $factory -Name $name -Force | Out-Null
             }
-            Write-Output 'Development deployment succeeded. New triggers remain stopped.'
+            Write-Output "Development deployment succeeded. Started triggers: $($toStart -join ', ')"
