@@ -72,11 +72,6 @@
 				"type": "datetime",
 				"precision": 23,
 				"scale": 3
-			},
-			{
-				"name": "publishedOnUtc",
-				"type": "datetime2",
-				"scale": 3
 			}
 		],
 		"typeProperties": {

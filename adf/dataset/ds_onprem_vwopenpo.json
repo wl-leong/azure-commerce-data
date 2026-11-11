@@ -7,7 +7,73 @@
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "corporateId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "poName",
+				"type": "varchar"
+			},
+			{
+				"name": "poDate",
+				"type": "date"
+			},
+			{
+				"name": "poEstArvDate",
+				"type": "date"
+			},
+			{
+				"name": "containerNo",
+				"type": "varchar"
+			},
+			{
+				"name": "invId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "upc",
+				"type": "varchar"
+			},
+			{
+				"name": "modelNo",
+				"type": "varchar"
+			},
+			{
+				"name": "openPoQty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "addrId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "warehouseName",
+				"type": "varchar"
+			},
+			{
+				"name": "insertedOn",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "modifiedOn",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "poEntryId",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "vw_openPo"
