@@ -14,8 +14,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -25,7 +25,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "SELECT orderDate, country, corporateId, vinvId, invId, [ASIN] AS asin, parentAsin, msrp, orderedQty, orderedRevenue,\n       shippedQty, shippedRevenue, shippedCOGS, customerReturns, lastModifiedTime\nFROM dbo.vw_amazonDailyVirtualSales\nWHERE lastModifiedTime >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND lastModifiedTime <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
+							"value": "SELECT orderDate, country, corporateId, vinvId, invId, [ASIN] AS asin, parentAsin, msrp, orderedQty, orderedRevenue,\n       shippedQty, shippedRevenue, shippedCOGS, customerReturns, lastModifiedTime\nFROM dbo.fn_amazonDailyVirtualSales(\n    DATEADD(MINUTE, -30, CONVERT(DATETIME, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01T00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff'))}', 126)),\n    CONVERT(DATETIME, '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff')}', 126))",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -271,8 +271,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -314,8 +314,8 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -340,7 +340,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')\n",
 							"type": "String"
 						},
 						"factoryName": {
@@ -351,7 +351,7 @@
 							"type": "String"
 						},
 						"loadType": {
-							"value": "Delta",
+							"value": "@pipeline().parameters.loadType",
 							"type": "String"
 						},
 						"pipelineName": {
@@ -366,7 +366,7 @@
 							"type": "String"
 						},
 						"targetObject": {
-							"value": "dbo.salesAmzDailyVirtual",
+							"value": "dbo.salesLlyDailyVirtualSales",
 							"type": "String"
 						}
 					}
@@ -388,8 +388,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -438,8 +438,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -486,8 +486,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -534,8 +534,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -600,7 +600,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Insert to staging inventory failed.",
+					"message": "Insert to staging amazon daily virtual sales failed.",
 					"errorCode": "COPY_FAILED"
 				}
 			},
@@ -650,8 +650,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -682,8 +682,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -692,7 +692,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT MAX(lastModifiedTime) as watermarkValue \nFROM vw_amazonDailyVirtualSales",
+						"sqlReaderQuery": "SELECT MAX(insertedOn) AS watermarkValue\nFROM vendorCentral.dbo.ODS_Amz_DailySalesManufacturing",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
