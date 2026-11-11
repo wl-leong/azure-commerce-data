@@ -222,7 +222,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
@@ -342,7 +342,7 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory sync failed during staging copy.",
+							"value": "Inventory warehouse balance sync failed during staging copy.",
 							"type": "String"
 						},
 						"failedStep": {
@@ -390,7 +390,7 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory publish to summary table failed",
+							"value": "Inventory warehouse balance publish to inventoryWarehouseBalance table failed",
 							"type": "String"
 						},
 						"failedStep": {
