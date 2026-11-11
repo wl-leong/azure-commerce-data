@@ -39,6 +39,11 @@
 						"type": "TabularTranslator",
 						"mappings": [
 							{
+								"source": {
+									"name": "entryID",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
 								"sink": {
 									"name": "inventoryVirtualId",
 									"type": "Int64",
