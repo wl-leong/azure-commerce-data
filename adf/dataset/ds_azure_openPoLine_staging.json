@@ -62,14 +62,15 @@
 				"type": "varchar"
 			},
 			{
-				"name": "modifiedOn",
+				"name": "insertedOn",
 				"type": "datetime",
 				"precision": 23,
 				"scale": 3
 			},
 			{
-				"name": "publishedOnUtc",
-				"type": "datetime2",
+				"name": "modifiedOn",
+				"type": "datetime",
+				"precision": 23,
 				"scale": 3
 			}
 		],
