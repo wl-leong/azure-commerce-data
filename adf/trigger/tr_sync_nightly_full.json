@@ -1,5 +1,5 @@
 {
-	"name": "tr_sync_nightly",
+	"name": "tr_sync_nightly_full",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",
