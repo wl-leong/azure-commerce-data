@@ -328,7 +328,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
@@ -339,7 +339,7 @@
 							"type": "String"
 						},
 						"loadType": {
-							"value": "Delta",
+							"value": "@pipeline().parameters.loadType",
 							"type": "String"
 						},
 						"pipelineName": {

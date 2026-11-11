@@ -1,0 +1,27 @@
+{
+	"name": "tr_sync_every_2hours_delta",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_amzDailySales_delta",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"loadType": "Delta"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 2,
+				"startTime": "2026-11-11T10:40:00",
+				"timeZone": "Singapore Standard Time"
+			}
+		}
+	}
+}
