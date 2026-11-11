@@ -451,7 +451,7 @@
 							"type": "String"
 						},
 						"loadType": {
-							"value": "Delta",
+							"value": "@pipeline().parameters.loadType",
 							"type": "String"
 						},
 						"pipelineName": {
