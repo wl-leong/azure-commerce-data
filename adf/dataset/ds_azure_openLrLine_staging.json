@@ -37,7 +37,13 @@
 			},
 			{
 				"name": "supSku",
-				"type": "date"
+				"type": "varchar"
+			},
+			{
+				"name": "supCost",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
 			},
 			{
 				"name": "invId",
