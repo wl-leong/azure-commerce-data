@@ -2,7 +2,7 @@
 	"name": "tr_sync_every_2hours_delta",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
@@ -11,6 +11,15 @@
 				},
 				"parameters": {
 					"loadType": "Delta"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_amzDailyVirtualSales_delta",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"loadType": "Full"
 				}
 			}
 		],
