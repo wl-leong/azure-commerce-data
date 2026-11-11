@@ -414,11 +414,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory sync failed during staging copy.",
+							"value": "Copy to staging failed; inspect ADF diagnostics.",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"value": "Open Po sync failed during staging copy.",
 							"type": "String"
 						}
 					}
