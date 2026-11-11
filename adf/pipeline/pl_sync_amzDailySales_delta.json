@@ -25,7 +25,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "SELECT orderDate, country, corporateId, invId, [ASIN] AS asin, parentAsin, msrp, orderedQty, orderedRevenue,\n       shippedQty, shippedRevenue, shippedCOGS, customerReturns, lastModifiedTime\nFROM dbo.vw_amazonDailySales\nWHERE lastModifiedTime >  DATEADD(MINUTE, -10, CONVERT(DATETIME, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01T00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff'))}', 126))\n  AND lastModifiedTime <= CONVERT(DATETIME, '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff')}', 126)",
+							"value": "SELECT orderDate, country, corporateId, invId, [ASIN] AS asin, parentAsin, msrp, orderedQty, orderedRevenue,\n       shippedQty, shippedRevenue, shippedCOGS, customerReturns, lastModifiedTime\nFROM dbo.fn_amazonDailySales(\n    DATEADD(MINUTE, -10, CONVERT(DATETIME, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01T00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff'))}', 126)),\n    CONVERT(DATETIME, '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-ddTHH:mm:ss.fff')}', 126))",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -680,7 +680,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT MAX(lastModifiedTime) as watermarkValue \nFROM vw_amazonDailySales",
+						"sqlReaderQuery": "SELECT MAX(insertedOn) AS watermarkValue\nFROM vendorCentral.dbo.ODS_Amz_DailySalesManufacturing",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
