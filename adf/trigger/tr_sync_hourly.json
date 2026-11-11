@@ -1,5 +1,5 @@
 {
-	"name": "tr_sync_hourly_delta",
+	"name": "tr_sync_hourly",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",
