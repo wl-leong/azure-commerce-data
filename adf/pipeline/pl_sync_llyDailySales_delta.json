@@ -598,7 +598,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT MAX(modifiedOn) as watermarkValue \nFROM vw_llyDailySales",
+						"sqlReaderQuery": "SELECT MAX(modifiedon) AS watermarkValue\nFROM tech_dm.dbo.ODS_Sales_DailyOrders",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
