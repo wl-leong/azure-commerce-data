@@ -14,8 +14,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -176,7 +176,7 @@
 				]
 			},
 			{
-				"name": "publish_amz forecasting_summary",
+				"name": "publish_amzforecasting_summary",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -187,8 +187,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -216,8 +216,8 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -242,7 +242,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
@@ -283,15 +283,15 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_amz forecasting_summary",
+						"activity": "publish_amzforecasting_summary",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -340,8 +340,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -366,7 +366,7 @@
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"value": "CopyAmazonForecastingToStaging",
 							"type": "String"
 						}
 					}
@@ -381,15 +381,15 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_amz forecasting_summary",
+						"activity": "publish_amzforecasting_summary",
 						"dependencyConditions": [
 							"Failed"
 						]
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -410,11 +410,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory publish to summary table failed",
+							"value": "Amz forecasting publish to summary table failed",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "PublishInventoryBalanceSummary",
+							"value": "PublishAmazonForecasting",
 							"type": "String"
 						}
 					}
@@ -436,8 +436,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -502,7 +502,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Insert to staging ODS DailyBalanceRefresh failed.",
+					"message": "Insert to staging amz forecasting failed.",
 					"errorCode": "COPY_FAILED"
 				}
 			},
@@ -519,7 +519,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Exec SSP_PublishInventoryBalanceSummary failed.",
+					"message": "Exec SSP_PublishAmazonForecasting failed.",
 					"errorCode": "PUBLISH_FAILED"
 				}
 			},
