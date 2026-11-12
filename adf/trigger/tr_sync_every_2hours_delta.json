@@ -21,6 +21,15 @@
 				"parameters": {
 					"loadType": "Delta"
 				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_llyDailyVirtualSales_delta",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"loadType": "Delta"
+				}
 			}
 		],
 		"type": "ScheduleTrigger",
