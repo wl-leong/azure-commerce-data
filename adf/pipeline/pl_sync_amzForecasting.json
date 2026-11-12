@@ -242,7 +242,7 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
 							"type": "String"
 						},
 						"factoryName": {
@@ -410,11 +410,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory publish to summary table failed",
+							"value": "Amz forecasting publish to summary table failed",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "PublishInventoryBalanceSummary",
+							"value": "PublishAmazonForecasting",
 							"type": "String"
 						}
 					}
@@ -502,7 +502,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Insert to staging ODS DailyBalanceRefresh failed.",
+					"message": "Insert to staging amz forecasting failed.",
 					"errorCode": "COPY_FAILED"
 				}
 			},
@@ -519,7 +519,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Exec SSP_PublishInventoryBalanceSummary failed.",
+					"message": "Exec SSP_PublishAmazonForecasting failed.",
 					"errorCode": "PUBLISH_FAILED"
 				}
 			},
