@@ -176,7 +176,7 @@
 				]
 			},
 			{
-				"name": "publish_amz forecasting_summary",
+				"name": "publish_amzforecasting_summary",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -283,7 +283,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_amz forecasting_summary",
+						"activity": "publish_amzforecasting_summary",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -366,7 +366,7 @@
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"value": "CopyAmazonForecastingToStaging",
 							"type": "String"
 						}
 					}
@@ -381,7 +381,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_amz forecasting_summary",
+						"activity": "publish_amzforecasting_summary",
 						"dependencyConditions": [
 							"Failed"
 						]
