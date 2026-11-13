@@ -6,15 +6,6 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pl_sync_inventory_delta",
-					"type": "PipelineReference"
-				},
-				"parameters": {
-					"loadType": "Full"
-				}
-			},
-			{
-				"pipelineReference": {
 					"referenceName": "pl_sync_amzForecasting_full",
 					"type": "PipelineReference"
 				}
