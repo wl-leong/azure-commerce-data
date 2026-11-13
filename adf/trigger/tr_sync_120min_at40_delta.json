@@ -39,6 +39,12 @@
 				"parameters": {
 					"loadType": "Delta"
 				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "pl_sync_amzInventoryManufacturing_delta",
+					"type": "PipelineReference"
+				}
 			}
 		],
 		"type": "ScheduleTrigger",
