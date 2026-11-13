@@ -1,21 +1,21 @@
 {
-	"name": "pl_sync_inventoryAging_delta",
+	"name": "pl_sync_amzForecasting_full",
 	"properties": {
 		"activities": [
 			{
-				"name": "copy_inventoryagingband_to_staging",
+				"name": "copy_amzForecasting_to_staging",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "lkp_new_watermark",
+						"activity": "start_sync_log",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -24,16 +24,12 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": {
-							"value": "SELECT  snapshotDate, corporateId, invId, upc, modelNo, productCategory, \n\t\tagingQty, rawCost, agingBand6mId, agingBand6m, agingBand30dId, agingBand30d\nFROM dbo.vw_inventoryAgingBand\nWHERE insertedOn >  DATEADD(MINUTE, -10, '@{if(equals(pipeline().parameters.loadType, 'Full'), '1900-01-01 00:00:00.000', formatDateTime(activity('lkp_old_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff'))}')\n  AND insertedOn <= '@{formatDateTime(activity('lkp_new_watermark').output.firstRow.watermarkValue, 'yyyy-MM-dd HH:mm:ss.fff')}'",
-							"type": "Expression"
-						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "EXEC [staging].[SSP_ClearInventory];",
+						"preCopyScript": "EXEC [staging].[SSP_ClearAmazonForecasting];",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -44,12 +40,12 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "snapshotDate",
+									"name": "forecastGenerationDate",
 									"type": "Date",
 									"physicalType": "date"
 								},
 								"sink": {
-									"name": "snapshotDate",
+									"name": "forecastGenerationDate",
 									"type": "Date",
 									"physicalType": "date"
 								}
@@ -68,6 +64,30 @@
 							},
 							{
 								"source": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "country",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "sellingProgram",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "sellingProgram",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
 									"name": "invId",
 									"type": "Int64",
 									"physicalType": "bigint"
@@ -80,114 +100,58 @@
 							},
 							{
 								"source": {
-									"name": "upc",
+									"name": "ASIN",
 									"type": "String",
 									"physicalType": "varchar"
 								},
 								"sink": {
-									"name": "upc",
+									"name": "asin",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "modelNo",
-									"type": "String",
-									"physicalType": "varchar"
+									"name": "p70Week0To23Units",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 38
 								},
 								"sink": {
-									"name": "modelNo",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "productCategory",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "productCategory",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "agingQty",
-									"type": "Int32",
-									"physicalType": "int"
-								},
-								"sink": {
-									"name": "agingQty",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "rawCost",
+									"name": "p70Week0To23Units",
 									"type": "Decimal",
 									"physicalType": "decimal",
 									"scale": 2,
 									"precision": 18
-								},
-								"sink": {
-									"name": "rawCost",
+								}
+							},
+							{
+								"source": {
+									"name": "p70Week24To47Units",
 									"type": "Decimal",
 									"physicalType": "decimal",
-									"scale": 4,
+									"scale": 2,
+									"precision": 38
+								},
+								"sink": {
+									"name": "p70Week24To47Units",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
 									"precision": 18
 								}
 							},
 							{
 								"source": {
-									"name": "agingBand6mId",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
 								},
 								"sink": {
-									"name": "agingBand6mId",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "agingBand6m",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "agingBand6m",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "agingBand30dId",
-									"type": "Int32",
-									"physicalType": "int"
-								},
-								"sink": {
-									"name": "agingBand30dId",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "agingBand30d",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "agingBand30d",
-									"type": "String",
-									"physicalType": "varchar"
+									"name": "lastModifiedTime",
+									"type": "DateTime",
+									"physicalType": "datetime"
 								}
 							}
 						],
@@ -200,38 +164,38 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_onprem_inventoryAgingAllocation",
+						"referenceName": "ds_onprem_amzForecasting",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_azure_inventoryAgingAllocation_staging",
+						"referenceName": "ds_azure_amzForecasting_staging",
 						"type": "DatasetReference"
 					}
 				]
 			},
 			{
-				"name": "publish_inventory_aging",
+				"name": "publish_amzforecasting_summary",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_inventoryagingband_to_staging",
+						"activity": "copy_amzForecasting_to_staging",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[SSP_PublishInventoryAging]",
+					"storedProcedureName": "[dbo].[SSP_PublishAmazonForecasting]",
 					"storedProcedureParameters": {
 						"adfRunId": {
 							"value": {
@@ -239,20 +203,6 @@
 								"type": "Expression"
 							},
 							"type": "Guid"
-						},
-						"loadType": {
-							"value": {
-								"value": "@pipeline().parameters.loadType",
-								"type": "Expression"
-							},
-							"type": "String"
-						},
-						"newWatermark": {
-							"value": {
-								"value": "@activity('lkp_new_watermark').output.firstRow.watermarkValue",
-								"type": "Expression"
-							},
-							"type": "DateTime"
 						}
 					}
 				},
@@ -266,8 +216,8 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -284,15 +234,18 @@
 							"type": "Guid"
 						},
 						"domain": {
-							"value": "Inventory",
+							"value": "Amazon",
 							"type": "String"
 						},
 						"entityName": {
-							"value": "InventoryAging",
+							"value": "amazonForecasting",
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "dev",
+							"value": {
+								"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"factoryName": {
@@ -303,7 +256,7 @@
 							"type": "String"
 						},
 						"loadType": {
-							"value": "Delta",
+							"value": "Full",
 							"type": "String"
 						},
 						"pipelineName": {
@@ -318,7 +271,7 @@
 							"type": "String"
 						},
 						"targetObject": {
-							"value": "dbo.inventoryAging",
+							"value": "dbo.amazonForecasting",
 							"type": "String"
 						}
 					}
@@ -333,15 +286,15 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_inventory_aging",
+						"activity": "publish_amzforecasting_summary",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -359,14 +312,14 @@
 						},
 						"rowsCopied": {
 							"value": {
-								"value": "@activity('copy_inventoryagingband_to_staging').output.rowsCopied",
+								"value": "@activity('copy_amzForecasting_to_staging').output.rowsCopied",
 								"type": "Expression"
 							},
 							"type": "Int64"
 						},
 						"rowsRead": {
 							"value": {
-								"value": "@activity('copy_inventoryagingband_to_staging').output.rowsRead",
+								"value": "@activity('copy_amzForecasting_to_staging').output.rowsRead",
 								"type": "Expression"
 							},
 							"type": "Int64"
@@ -383,15 +336,15 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_inventoryagingband_to_staging",
+						"activity": "copy_amzForecasting_to_staging",
 						"dependencyConditions": [
 							"Failed"
 						]
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -412,11 +365,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory aging sync failed during staging copy.",
+							"value": "Amazon forecasting sync failed during staging copy.",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "Copy to staging failed; inspect ADF diagnostics.",
+							"value": "CopyAmazonForecastingToStaging",
 							"type": "String"
 						}
 					}
@@ -431,15 +384,15 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "publish_inventory_aging",
+						"activity": "publish_amzforecasting_summary",
 						"dependencyConditions": [
 							"Failed"
 						]
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -460,11 +413,11 @@
 							"type": "String"
 						},
 						"errorMessage": {
-							"value": "Inventory aging publish to table failed",
+							"value": "Amz forecasting publish to summary table failed",
 							"type": "String"
 						},
 						"failedStep": {
-							"value": "PublishInventoryAging",
+							"value": "PublishAmazonForecasting",
 							"type": "String"
 						}
 					}
@@ -486,8 +439,8 @@
 					}
 				],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:30:00",
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -552,7 +505,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Insert to staging inventory aging failed.",
+					"message": "Insert to staging amz forecasting failed.",
 					"errorCode": "COPY_FAILED"
 				}
 			},
@@ -569,7 +522,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"message": "Exec SSP_PublishInventoryAging failed.",
+					"message": "Exec SSP_PublishAmazonForecasting failed.",
 					"errorCode": "PUBLISH_FAILED"
 				}
 			},
@@ -589,79 +542,9 @@
 					"message": "Update on complete run sync failed.",
 					"errorCode": "COMPLETE_SYNC_FAILED"
 				}
-			},
-			{
-				"name": "lkp_old_watermark",
-				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "start_sync_log",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT watermarkValue FROM dbo.dataSyncWatermark WHERE entityName = 'InventoryAging'",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "ds_azure_inventoryAgingAllocation_staging",
-						"type": "DatasetReference"
-					}
-				}
-			},
-			{
-				"name": "lkp_new_watermark",
-				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "lkp_old_watermark",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT MAX(insertedOn) as watermarkValue \nFROM vw_inventoryAgingBand",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "ds_onprem_inventoryAgingAllocation",
-						"type": "DatasetReference"
-					}
-				}
 			}
 		],
 		"concurrency": 1,
-		"parameters": {
-			"loadType": {
-				"type": "string",
-				"defaultValue": "Delta"
-			}
-		},
 		"annotations": []
 	}
 }
