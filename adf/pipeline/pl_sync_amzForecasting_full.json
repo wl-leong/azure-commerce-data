@@ -1,5 +1,5 @@
 {
-	"name": "pl_sync_amzForecasting",
+	"name": "pl_sync_amzForecasting_full",
 	"properties": {
 		"activities": [
 			{
@@ -242,7 +242,10 @@
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
+							"value": {
+								"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"factoryName": {
