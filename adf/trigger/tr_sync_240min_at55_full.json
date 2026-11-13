@@ -1,12 +1,12 @@
 {
-	"name": "tr_sync_every_30min",
+	"name": "tr_sync_240min_at55_full",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pl_sync_warehousebalance_full",
+					"referenceName": "pl_sync_inventoryAging_full",
 					"type": "PipelineReference"
 				}
 			}
@@ -14,9 +14,9 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Minute",
-				"interval": 30,
-				"startTime": "2026-11-02T12:12:00",
+				"frequency": "Hour",
+				"interval": 4,
+				"startTime": "2026-11-13T02:55:00",
 				"timeZone": "Singapore Standard Time"
 			}
 		}
