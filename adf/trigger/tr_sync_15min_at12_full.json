@@ -1,12 +1,12 @@
 {
-	"name": "tr_sync_every_4hours",
+	"name": "tr_sync_15min_at12_full",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pl_sync_inventoryAging_full",
+					"referenceName": "pl_sync_dailybalance_full",
 					"type": "PipelineReference"
 				}
 			}
@@ -14,9 +14,9 @@
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Hour",
-				"interval": 4,
-				"startTime": "2026-11-13T02:55:00",
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2026-11-02T05:27:00",
 				"timeZone": "Singapore Standard Time"
 			}
 		}

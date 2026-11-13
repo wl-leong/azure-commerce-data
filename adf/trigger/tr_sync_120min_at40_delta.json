@@ -1,5 +1,5 @@
 {
-	"name": "tr_sync_every_2hours_delta",
+	"name": "tr_sync_120min_at40_delta",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Stopped",

@@ -1,22 +1,25 @@
 {
-	"name": "tr_sync_every_15min",
+	"name": "tr_sync_60min_at20_delta",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pl_sync_dailybalance_full",
+					"referenceName": "pl_sync_inventory_delta",
 					"type": "PipelineReference"
+				},
+				"parameters": {
+					"loadType": "Delta"
 				}
 			}
 		],
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
-				"frequency": "Minute",
-				"interval": 15,
-				"startTime": "2026-11-02T05:27:00",
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2026-11-11T06:20:00",
 				"timeZone": "Singapore Standard Time"
 			}
 		}

@@ -1,5 +1,5 @@
 {
-	"name": "tr_sync_hourly",
+	"name": "tr_sync_60min_at30_full",
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",

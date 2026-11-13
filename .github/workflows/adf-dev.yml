@@ -138,9 +138,21 @@ jobs:
 
             New-AzResourceGroupDeployment -Name "adf-dev-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT" -ResourceGroupName $group -TemplateFile $safeTemplate -TemplateParameterObject $deploymentParameters -Mode Incremental -ErrorAction Stop | Out-Null
 
-            # Start triggers marked Started in git, plus any that were already running.
-            $toStart = @($wantedTriggers + @($started | ForEach-Object { $_.Name })) | Sort-Object -Unique
+            # Git is the source of truth: start only triggers marked Started in git.
+            # Triggers stopped above that git marks Stopped, or that are no longer in git
+            # (renamed / deleted), stay stopped.
+            $toStart = @($wantedTriggers) | Sort-Object -Unique
             foreach ($name in $toStart) {
               Start-AzDataFactoryV2Trigger -ResourceGroupName $group -DataFactoryName $factory -Name $name -Force | Out-Null
+            }
+
+            # Incremental deployment never deletes; list factory triggers missing from git so
+            # they can be deleted in live mode.
+            $gitTriggers = @($template.resources |
+              Where-Object { $_.type -match '/triggers$' } |
+              ForEach-Object { ($_.name -split '/')[-1] -replace "'\)\]$", '' })
+            $orphans = @($triggers | Where-Object { $gitTriggers -notcontains $_.Name } | ForEach-Object { $_.Name })
+            if ($orphans.Count -gt 0) {
+              Write-Output "::warning::Triggers in the factory but not in git (stopped; delete in live mode): $($orphans -join ', ')"
             }
             Write-Output "Development deployment succeeded. Started triggers: $($toStart -join ', ')"
