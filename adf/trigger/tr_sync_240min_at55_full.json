@@ -2,7 +2,7 @@
 	"name": "tr_sync_240min_at55_full",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
