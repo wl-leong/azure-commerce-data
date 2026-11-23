@@ -336,11 +336,14 @@
 							"type": "String"
 						},
 						"entityName": {
-							"value": "salesAmzDailyVirtualSales",
+							"value": "salesAmzDailyVirtual",
 							"type": "String"
 						},
 						"environmentName": {
-							"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')\n",
+							"value": {
+								"value": "@if(endswith(pipeline().DataFactory, '-prod'), 'prod', 'dev')\n",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"factoryName": {
@@ -351,7 +354,10 @@
 							"type": "String"
 						},
 						"loadType": {
-							"value": "@pipeline().parameters.loadType",
+							"value": {
+								"value": "@pipeline().parameters.loadType",
+								"type": "Expression"
+							},
 							"type": "String"
 						},
 						"pipelineName": {
@@ -366,7 +372,7 @@
 							"type": "String"
 						},
 						"targetObject": {
-							"value": "dbo.salesLlyDailyVirtualSales",
+							"value": "dbo.salesAmzDailyVirtual",
 							"type": "String"
 						}
 					}

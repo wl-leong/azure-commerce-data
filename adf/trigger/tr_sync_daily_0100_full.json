@@ -2,7 +2,7 @@
 	"name": "tr_sync_daily_0100_full",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
